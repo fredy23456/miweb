@@ -1,93 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Comunidad Tighti</title>
-    <style>
-        body{
-            margin:0;
-            background:linear-gradient(to right, black, #1a001a);
-            color:white;
-            font-family:Arial;
-            text-align:center;
-            overflow:hidden;
-        }
+<title>Comunidad Tighti</title>
 
-        h1{
-            margin-top:40px;
-            text-shadow:0 0 10px #ff00ff, 0 0 20px #00ffff;
-        }
+<style>
+body{
+    margin:0;
+    background:linear-gradient(to right, black, #1a001a);
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    overflow:hidden;
+}
 
-        .container{
-            display:flex;
-            justify-content:center;
-            gap:40px;
-            margin-top:60px;
-        }
+h1{
+    margin-top:40px;
+    text-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
+}
 
-        .card{
-            background:#0a0a0a;
-            padding:30px;
-            border-radius:20px;
-            box-shadow:0 0 20px #ff00ff, 0 0 40px #00ffff;
-        }
+.container{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-top:60px;
+}
 
-        a, button{
-            padding:12px 25px;
-            border-radius:20px;
-            border:none;
-            background:linear-gradient(45deg,#ff00ff,#00ffff);
-            color:white;
-            cursor:pointer;
-            margin-top:20px;
-        }
+.card{
+    background:#0a0a0a;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 0 20px #ff00ff,0 0 40px #00ffff;
+}
 
-        .fade{
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:black;
-            opacity:0;
-            transition:opacity 2s;
-            z-index:10;
-        }
+button, a{
+    padding:12px 25px;
+    border-radius:20px;
+    border:none;
+    background:linear-gradient(45deg,#ff00ff,#00ffff);
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+    text-decoration:none;
+}
 
-        .screen{
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:black;
-            display:none;
-            justify-content:center;
-            align-items:center;
-            flex-direction:column;
-            z-index:20;
-        }
+.fade{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    top:0;
+    left:0;
+    opacity:0;
+    transition:opacity 2s;
+    z-index:5;
+    pointer-events:none;
+}
 
-        .ojo{
-            position:absolute;
-            width:60px;
-            opacity:0.5;
-        }
+.screen{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    top:0;
+    left:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:10;
+}
 
-        .terminal{
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:black;
-            color:#00ff00;
-            font-family:monospace;
-            padding:20px;
-            text-align:left;
-            display:none;
-            z-index:30;
-        }
-    </style>
+.ojo{
+    position:absolute;
+    width:60px;
+    opacity:0.5;
+}
+
+.terminal{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    color:#00ff00;
+    font-family:monospace;
+    padding:20px;
+    text-align:left;
+    display:none;
+    z-index:20;
+}
+</style>
 </head>
 <body>
 
@@ -130,16 +131,16 @@
 <div class="terminal" id="terminal"></div>
 
 <script>
-let fade = document.getElementById("fade");
+let fade=document.getElementById("fade");
 
-/* Oscurecer pantalla */
+/* Oscurecer */
 function oscurecer(callback){
-    fade.style.opacity = "1";
+    fade.style.opacity="1";
     setTimeout(()=>{
         callback();
         setTimeout(()=>{
-            fade.style.opacity = "0";
-        },500);
+            fade.style.opacity="0";
+        },300);
     },2000);
 }
 
@@ -155,7 +156,7 @@ function pantalla2(){
     oscurecer(()=>{
         document.getElementById("s1").style.display="none";
         document.getElementById("s2").style.display="flex";
-        ojos();
+        crearOjos();
     });
 }
 
@@ -163,11 +164,11 @@ function terminal(){
     oscurecer(()=>{
         document.getElementById("s2").style.display="none";
         document.getElementById("terminal").style.display="block";
-        escribir();
+        escribirTerminal();
     });
 }
 
-/* Boton NO se mueve */
+/* Botón NO se mueve */
 function mover(btn){
     btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
@@ -181,24 +182,24 @@ document.addEventListener("mouseover",function(e){
 });
 
 /* Ojos */
-function ojos(){
-    let pantalla=document.getElementById("s2");
-    for(let i=0;i<30;i++){
+function crearOjos(){
+    let s2=document.getElementById("s2");
+    for(let i=0;i<25;i++){
         let ojo=document.createElement("img");
         ojo.src="ojo.png";
         ojo.className="ojo";
         ojo.style.left=Math.random()*window.innerWidth+"px";
         ojo.style.top=Math.random()*window.innerHeight+"px";
-        pantalla.appendChild(ojo);
+        s2.appendChild(ojo);
     }
 }
 
-/* Terminal escribiendo */
-function escribir(){
+/* Terminal */
+function escribirTerminal(){
     let lineas=[
         "Conectando...",
         "Accediendo al sistema...",
-        "Usuario encontrado...",
+        "Usuario detectado...",
         "Descargando archivos...",
         "Instalando virus...",
         "ERROR...",
@@ -210,7 +211,7 @@ function escribir(){
 
     function escribirLinea(){
         if(i>=lineas.length){
-            mensajesRojos();
+            textosRojos();
             return;
         }
 
@@ -218,12 +219,12 @@ function escribir(){
         term.appendChild(div);
 
         let j=0;
-        let intervalo=setInterval(()=>{
+        let inter=setInterval(()=>{
             div.textContent+=lineas[i][j];
             j++;
 
             if(j>=lineas[i].length){
-                clearInterval(intervalo);
+                clearInterval(inter);
                 i++;
                 setTimeout(escribirLinea,500);
             }
@@ -233,8 +234,8 @@ function escribir(){
     escribirLinea();
 }
 
-/* Mensajes rojos */
-function mensajesRojos(){
+/* Textos rojos */
+function textosRojos(){
     let mensajes=[
         "Te estamos observando",
         "No puedes salir",
@@ -245,14 +246,14 @@ function mensajesRojos(){
     ];
 
     setInterval(()=>{
-        let m=document.createElement("div");
-        m.style.position="absolute";
-        m.style.color="red";
-        m.style.fontSize="22px";
-        m.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
-        m.style.left=Math.random()*window.innerWidth+"px";
-        m.style.top=Math.random()*window.innerHeight+"px";
-        document.body.appendChild(m);
+        let t=document.createElement("div");
+        t.style.position="absolute";
+        t.style.color="red";
+        t.style.fontSize="22px";
+        t.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
+        t.style.left=Math.random()*window.innerWidth+"px";
+        t.style.top=Math.random()*window.innerHeight+"px";
+        document.body.appendChild(t);
     },700);
 }
 </script>
