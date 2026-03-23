@@ -82,10 +82,6 @@
             z-index: 20;
         }
 
-        .overlay h1 {
-            text-shadow: none;
-        }
-
         .botones {
             display: flex;
             gap: 20px;
@@ -108,7 +104,6 @@
             width: 150px;
         }
 
-        /* OJOS */
         .ojo {
             position: absolute;
             width: 60px;
@@ -131,7 +126,7 @@
             z-index: 30;
         }
 
-        /* MENSAJES ROJOS */
+        /* TEXTOS ROJOS */
         .terror {
             position: absolute;
             color: red;
@@ -139,74 +134,67 @@
         }
 
     </style>
-
 </head>
 <body>
 
-    <h1>Bienvenido a la comunidad de Tighti</h1>
+<h1>Bienvenido a la comunidad de Tighti</h1>
 
-    <div class="container">
-        <div class="card">
-            <h2>Discord</h2>
-            <a href="https://discord.gg/cruqhYg5" target="_blank">Unirse</a>
-        </div>
-
-        <div class="card">
-            <h2>Twitch</h2>
-            <a href="https://www.twitch.tv/tighty1" target="_blank">Ver canal</a>
-        </div>
+<div class="container">
+    <div class="card">
+        <h2>Discord</h2>
+        <a href="https://discord.gg/cruqhYg5" target="_blank">Unirse</a>
     </div>
 
-    <div class="extra">
-        <button class="btn-neon" onclick="mostrar()">Conocer más</button>
+    <div class="card">
+        <h2>Twitch</h2>
+        <a href="https://www.twitch.tv/tighty1" target="_blank">Ver canal</a>
     </div>
+</div>
 
-    <div class="fade" id="fade"></div>
+<div class="extra">
+    <button class="btn-neon" onclick="mostrar()">Conocer más</button>
+</div>
 
-    <!-- PANTALLA 1 -->
-    <div class="overlay" id="pantalla1">
-        <h1>¿Quieres conocer más?</h1>
-        <div class="botones">
-            <button class="simple-btn" onclick="pantallaSeguro()">Sí</button>
-            <button class="simple-btn" id="noBtn">No</button>
-        </div>
-        <img src="cara.png" class="imagen">
-        <audio id="musica" loop>
-            <source src="musica.mp3" type="audio/mpeg">
-        </audio>
+<div class="fade" id="fade"></div>
+
+<!-- PANTALLA 1 -->
+<div class="overlay" id="pantalla1">
+    <h1>¿Quieres conocer más?</h1>
+    <div class="botones">
+        <button class="simple-btn" onclick="pantallaSeguro()">Sí</button>
+        <button class="simple-btn" id="noBtn">No</button>
     </div>
+    <img src="cara.png" class="imagen">
+    <audio id="musica" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+</div>
 
-    <!-- PANTALLA 2 -->
-    <div class="overlay" id="pantalla2">
-        <h1>¿Estás seguro?</h1>
-        <div class="botones">
-            <button class="simple-btn" onclick="terminal()">Estoy seguro</button>
-            <button class="simple-btn" id="noBtn2">No</button>
-        </div>
+<!-- PANTALLA 2 -->
+<div class="overlay" id="pantalla2">
+    <h1>¿Estás seguro?</h1>
+    <div class="botones">
+        <button class="simple-btn" onclick="terminal()">Estoy seguro</button>
+        <button class="simple-btn" id="noBtn2">No</button>
     </div>
+</div>
 
-    <!-- TERMINAL -->
-    <div class="terminal" id="terminal"></div>
+<!-- TERMINAL -->
+<div class="terminal" id="terminal"></div>
 
 <script>
 let fade = document.getElementById("fade");
 
-/* OSCURECER SIEMPRE */
+/* OSCURECER */
 function oscurecer(callback){
-    fade.style.transition = "none";
-    fade.style.opacity = "0";
-
+    fade.style.opacity = "1";
     setTimeout(()=>{
-        fade.style.transition = "opacity 2s";
-        fade.style.opacity = "1";
-    },50);
-
-    setTimeout(()=>{
-        fade.style.opacity = "0";
         callback();
+        fade.style.opacity = "0";
     },2000);
 }
 
+/* CAMBIOS DE PANTALLA */
 function mostrar(){
     oscurecer(()=>{
         document.getElementById("pantalla1").style.display="flex";
@@ -230,7 +218,7 @@ function terminal(){
     });
 }
 
-/* BOTON NO SE MUEVE */
+/* BOTON NO */
 function moverNo(btn){
     btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
@@ -256,7 +244,7 @@ function crearOjos(){
     }
 }
 
-/* TERMINAL TEXTO */
+/* TERMINAL */
 function escribirTerminal(){
     let texto=[
         "Conectando...",
@@ -280,21 +268,26 @@ function escribirTerminal(){
             let intervalo=setInterval(()=>{
                 linea.textContent+=texto[i][j];
                 j++;
+
                 if(j>=texto[i].length){
                     clearInterval(intervalo);
                     i++;
-                    setTimeout(escribirLinea,500);
+
+                    if(i>=texto.length){
+                        mensajesTerror(); // AQUI EMPIEZAN LOS TEXTOS ROJOS
+                    }else{
+                        setTimeout(escribirLinea,500);
+                    }
                 }
+
             },40);
-        }else{
-            mensajesTerror();
         }
     }
 
     escribirLinea();
 }
 
-/* MENSAJES ROJOS */
+/* TEXTOS ROJOS */
 function mensajesTerror(){
     let mensajes=[
         "Te estamos observando",
@@ -310,12 +303,10 @@ function mensajesTerror(){
         let m=document.createElement("div");
         m.className="terror";
         m.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
-
         m.style.left=Math.random()*window.innerWidth+"px";
         m.style.top=Math.random()*window.innerHeight+"px";
-
         document.body.appendChild(m);
-    },1500);
+    },700);
 }
 </script>
 
