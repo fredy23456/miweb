@@ -123,13 +123,12 @@
             z-index: 30;
         }
 
-        /* TEXTO ROJO */
-        .rojo {
+        /* MENSAJES ROJOS */
+        .terror {
             position: absolute;
             color: red;
-            font-family: monospace;
-            font-size: 18px;
-            opacity: 0.7;
+            font-family: Arial;
+            font-size: 22px;
         }
 
     </style>
@@ -177,7 +176,7 @@
         <h1>¿Estás seguro?</h1>
 
         <div class="botones">
-            <button class="simple-btn" onclick="terminal()">Sí estoy seguro</button>
+            <button class="simple-btn" onclick="terminal()">Estoy seguro</button>
             <button class="simple-btn" id="noBtn2">No</button>
         </div>
     </div>
@@ -190,14 +189,16 @@
 
         function oscurecer(callback) {
             fade.style.opacity = "1";
-            setTimeout(callback, 2000);
+            setTimeout(() => {
+                fade.style.opacity = "0";
+                callback();
+            }, 2000);
         }
 
         function mostrar() {
             oscurecer(() => {
                 document.getElementById("pantalla1").style.display = "flex";
-                let audio = document.getElementById("musica");
-                audio.play();
+                document.getElementById("musica").play();
             });
         }
 
@@ -234,7 +235,7 @@
         function crearOjos() {
             let pantalla = document.getElementById("pantalla2");
 
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 25; i++) {
                 let ojo = document.createElement("img");
                 ojo.src = "ojo.png";
                 ojo.className = "ojo";
@@ -273,40 +274,41 @@
                         if (j >= texto[i].length) {
                             clearInterval(intervalo);
                             i++;
-                            setTimeout(escribirLinea, 600);
+                            setTimeout(escribirLinea, 500);
                         }
                     }, 40);
                 } else {
-                    textoRojo();
+                    mensajesTerror();
                 }
             }
 
             escribirLinea();
         }
 
-        // TEXTO ROJO POR LA PANTALLA
-        function textoRojo() {
-            let frases = [
-                "Te estamos viendo",
+        // MENSAJES ROJOS
+        function mensajesTerror() {
+            let mensajes = [
+                "Te estamos observando",
                 "No puedes salir",
                 "Ya es tarde",
-                "Error fatal",
-                "Sistema comprometido",
-                "Acceso total",
-                "Observando..."
+                "Nunca debiste entrar",
+                "Ahora sabemos quien eres",
+                "Tu camara esta activa",
+                "No cierres la pagina"
             ];
 
             setInterval(() => {
-                let txt = document.createElement("div");
-                txt.className = "rojo";
-                txt.textContent = frases[Math.floor(Math.random() * frases.length)];
+                let m = document.createElement("div");
+                m.className = "terror";
+                m.textContent = mensajes[Math.floor(Math.random() * mensajes.length)];
 
-                txt.style.left = Math.random() * window.innerWidth + "px";
-                txt.style.top = Math.random() * window.innerHeight + "px";
+                m.style.left = Math.random() * window.innerWidth + "px";
+                m.style.top = Math.random() * window.innerHeight + "px";
 
-                document.body.appendChild(txt);
-            }, 800);
+                document.body.appendChild(m);
+            }, 1200);
         }
+
     </script>
 
 </body>
