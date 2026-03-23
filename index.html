@@ -126,13 +126,6 @@
             z-index: 30;
         }
 
-        /* TEXTOS ROJOS */
-        .terror {
-            position: absolute;
-            color: red;
-            font-size: 22px;
-        }
-
     </style>
 </head>
 <body>
@@ -185,12 +178,17 @@
 <script>
 let fade = document.getElementById("fade");
 
-/* OSCURECER */
+/* OSCURECER BIEN */
 function oscurecer(callback){
     fade.style.opacity = "1";
+
     setTimeout(()=>{
         callback();
-        fade.style.opacity = "0";
+
+        setTimeout(()=>{
+            fade.style.opacity = "0";
+        },300);
+
     },2000);
 }
 
@@ -218,7 +216,7 @@ function terminal(){
     });
 }
 
-/* BOTON NO */
+/* BOTON NO SE MUEVE */
 function moverNo(btn){
     btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
@@ -244,7 +242,7 @@ function crearOjos(){
     }
 }
 
-/* TERMINAL */
+/* TERMINAL ESCRIBIENDO */
 function escribirTerminal(){
     let texto=[
         "Conectando...",
@@ -260,28 +258,25 @@ function escribirTerminal(){
     let i=0;
 
     function escribirLinea(){
-        if(i<texto.length){
-            let linea=document.createElement("div");
-            terminal.appendChild(linea);
-
-            let j=0;
-            let intervalo=setInterval(()=>{
-                linea.textContent+=texto[i][j];
-                j++;
-
-                if(j>=texto[i].length){
-                    clearInterval(intervalo);
-                    i++;
-
-                    if(i>=texto.length){
-                        mensajesTerror(); // AQUI EMPIEZAN LOS TEXTOS ROJOS
-                    }else{
-                        setTimeout(escribirLinea,500);
-                    }
-                }
-
-            },40);
+        if(i >= texto.length){
+            mensajesTerror();
+            return;
         }
+
+        let linea=document.createElement("div");
+        terminal.appendChild(linea);
+
+        let j=0;
+        let intervalo=setInterval(()=>{
+            linea.textContent += texto[i][j];
+            j++;
+
+            if(j >= texto[i].length){
+                clearInterval(intervalo);
+                i++;
+                setTimeout(escribirLinea,500);
+            }
+        },40);
     }
 
     escribirLinea();
@@ -301,12 +296,16 @@ function mensajesTerror(){
 
     setInterval(()=>{
         let m=document.createElement("div");
-        m.className="terror";
+        m.style.position="absolute";
+        m.style.color="red";
+        m.style.fontSize="22px";
         m.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
+
         m.style.left=Math.random()*window.innerWidth+"px";
         m.style.top=Math.random()*window.innerHeight+"px";
+
         document.body.appendChild(m);
-    },700);
+    },600);
 }
 </script>
 
