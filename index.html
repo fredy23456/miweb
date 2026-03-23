@@ -13,7 +13,6 @@
             overflow: hidden;
         }
 
-        /* SOLO LA PRIMERA PARTE NEON */
         .titulo-neon {
             margin-top: 40px;
             text-shadow:
@@ -64,11 +63,10 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 6s;
-            z-index: 10;
+            transition: opacity 8s;
+            z-index: 50;
         }
 
-        /* PANTALLAS NEGRAS */
         .overlay {
             position: fixed;
             top: 0;
@@ -109,7 +107,7 @@
         .ojo {
             position: absolute;
             width: 60px;
-            opacity: 0.4;
+            opacity: 0.5;
             pointer-events: none;
         }
 
@@ -179,7 +177,7 @@
         function seguro() {
             document.getElementById("pantalla").style.display = "none";
             document.getElementById("pantalla2").style.display = "flex";
-            crearOjos(); // OJOS EN ESTA PANTALLA
+            crearOjos();
         }
 
         function final() {
@@ -200,9 +198,11 @@
             }
         });
 
-        // CREAR OJOS SIN TAPAR EL CENTRO
+        // OJOS EN TODA LA PANTALLA
         function crearOjos() {
-            for (let i = 0; i < 30; i++) {
+            let pantalla = document.getElementById("pantalla2");
+
+            for (let i = 0; i < 40; i++) {
                 let ojo = document.createElement("img");
                 ojo.src = "ojo.png";
                 ojo.className = "ojo";
@@ -218,7 +218,8 @@
 
                 ojo.style.left = x + "px";
                 ojo.style.top = y + "px";
-                document.body.appendChild(ojo);
+
+                pantalla.appendChild(ojo);
             }
         }
     </script>
