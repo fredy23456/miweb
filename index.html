@@ -10,6 +10,7 @@
             color: white;
             font-family: Arial;
             text-align: center;
+            overflow: hidden;
         }
 
         h1 {
@@ -60,7 +61,7 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 3s;
+            transition: opacity 8s; /* MAS LENTO */
             z-index: 10;
         }
 
@@ -76,10 +77,6 @@
             align-items: center;
             flex-direction: column;
             z-index: 20;
-        }
-
-        .overlay h1 {
-            text-shadow: none;
         }
 
         .botones {
@@ -102,6 +99,14 @@
             bottom: 20px;
             right: 20px;
             width: 150px;
+        }
+
+        /* OJOS */
+        .ojo {
+            position: absolute;
+            width: 60px;
+            opacity: 0.4;
+            pointer-events: none;
         }
 
     </style>
@@ -129,7 +134,7 @@
 
     <div class="fade" id="fade"></div>
 
-    <!-- PRIMERA PANTALLA -->
+    <!-- PANTALLA 1 -->
     <div class="overlay" id="pantalla">
         <h1>¿Quieres conocer más?</h1>
 
@@ -145,7 +150,7 @@
         </audio>
     </div>
 
-    <!-- SEGUNDA PANTALLA -->
+    <!-- PANTALLA 2 -->
     <div class="overlay" id="pantalla2">
         <h1>¿Estás seguro?</h1>
 
@@ -162,11 +167,8 @@
 
             setTimeout(() => {
                 document.getElementById("pantalla").style.display = "flex";
-
                 let audio = document.getElementById("musica");
-                audio.volume = 0.5;
                 audio.play();
-
             }, 2000);
         }
 
@@ -177,8 +179,9 @@
 
         function final() {
             let fade = document.getElementById("fade");
-            fade.style.transition = "opacity 6s";
             fade.style.opacity = "1";
+
+            crearOjos();
         }
 
         // BOTON NO SE MUEVE
@@ -193,6 +196,18 @@
                 moverNo(e.target);
             }
         });
+
+        // CREAR OJOS POR TODA LA PANTALLA
+        function crearOjos() {
+            for (let i = 0; i < 25; i++) {
+                let ojo = document.createElement("img");
+                ojo.src = "cara.png";
+                ojo.className = "ojo";
+                ojo.style.left = Math.random() * window.innerWidth + "px";
+                ojo.style.top = Math.random() * window.innerHeight + "px";
+                document.body.appendChild(ojo);
+            }
+        }
     </script>
 
 </body>
