@@ -45,7 +45,6 @@
             border: none;
             cursor: pointer;
             background: linear-gradient(45deg, #ff00ff, #00ffff);
-            text-decoration: none;
         }
 
         .extra {
@@ -61,7 +60,7 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 2s;
+            transition: opacity 3s;
             z-index: 10;
         }
 
@@ -104,9 +103,10 @@
             right: 20px;
             width: 150px;
         }
-    </style>
 
+    </style>
 </head>
+
 <body>
 
     <h1>Bienvenido a la comunidad de Tighti</h1>
@@ -127,53 +127,72 @@
         <button class="btn-neon" onclick="mostrar()">Conocer más</button>
     </div>
 
-    <!-- EFECTO OSCURO -->
     <div class="fade" id="fade"></div>
 
-    <!-- SEGUNDA PANTALLA -->
+    <!-- PRIMERA PANTALLA -->
     <div class="overlay" id="pantalla">
-
-        <h1>¿Estás seguro que quieres conocer más?</h1>
+        <h1>¿Quieres conocer más?</h1>
 
         <div class="botones">
-            <button class="simple-btn" onclick="ir()">Sí</button>
-            <button class="simple-btn" onclick="cerrar()">No</button>
+            <button class="simple-btn" onclick="seguro()">Sí</button>
+            <button class="simple-btn" id="noBtn">No</button>
         </div>
 
-        <!-- IMAGEN -->
         <img src="cara.png" class="imagen">
 
+        <audio id="musica" loop>
+            <source src="musica.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
-    <!-- MUSICA -->
-    <audio id="musica" loop>
-        <source src="musica.mp3" type="audio/mpeg">
-    </audio>
+    <!-- SEGUNDA PANTALLA -->
+    <div class="overlay" id="pantalla2">
+        <h1>¿Estás seguro?</h1>
+
+        <div class="botones">
+            <button class="simple-btn" onclick="final()">Sí</button>
+            <button class="simple-btn" id="noBtn2">No</button>
+        </div>
+    </div>
 
     <script>
         function mostrar() {
             let fade = document.getElementById("fade");
             fade.style.opacity = "1";
 
-            // MUSICA (empieza al hacer clic)
-            let audio = document.getElementById("musica");
-            audio.currentTime = 0;
-            audio.play().catch(function(e){console.log(e);});
-
             setTimeout(() => {
                 document.getElementById("pantalla").style.display = "flex";
+
+                let audio = document.getElementById("musica");
+                audio.volume = 0.5;
+                audio.play();
+
             }, 2000);
         }
 
-        function cerrar() {
+        function seguro() {
             document.getElementById("pantalla").style.display = "none";
-            document.getElementById("fade").style.opacity = "0";
-            document.getElementById("musica").pause();
+            document.getElementById("pantalla2").style.display = "flex";
         }
 
-        function ir() {
-            window.location.href = "https://google.com";
+        function final() {
+            let fade = document.getElementById("fade");
+            fade.style.transition = "opacity 6s";
+            fade.style.opacity = "1";
         }
+
+        // BOTON NO SE MUEVE
+        function moverNo(btn) {
+            btn.style.position = "absolute";
+            btn.style.left = Math.random() * window.innerWidth + "px";
+            btn.style.top = Math.random() * window.innerHeight + "px";
+        }
+
+        document.addEventListener("mouseover", function(e) {
+            if (e.target.id === "noBtn" || e.target.id === "noBtn2") {
+                moverNo(e.target);
+            }
+        });
     </script>
 
 </body>
