@@ -15,9 +15,6 @@
 
         h1 {
             margin-top: 40px;
-            text-shadow:
-                0 0 10px #ff00ff,
-                0 0 20px #00ffff;
         }
 
         .container {
@@ -53,6 +50,7 @@
             margin-top: 40px;
         }
 
+        /* OSCURECER */
         .fade {
             position: fixed;
             top: 0;
@@ -179,34 +177,39 @@
     <div class="terminal" id="terminal"></div>
 
     <script>
-        function mostrar() {
-            let fade = document.getElementById("fade");
-            fade.style.opacity = "1";
+        let fade = document.getElementById("fade");
 
-            setTimeout(() => {
-                document.getElementById("pantalla1").style.display = "flex";
-                let audio = document.getElementById("musica");
-                audio.play();
-            }, 2000);
-        }
-
-        function pantallaSeguro() {
+        function oscurecer(callback) {
             fade.style.opacity = "0";
             setTimeout(() => {
                 fade.style.opacity = "1";
             }, 100);
 
-            setTimeout(() => {
+            setTimeout(callback, 3000);
+        }
+
+        function mostrar() {
+            oscurecer(() => {
+                document.getElementById("pantalla1").style.display = "flex";
+                let audio = document.getElementById("musica");
+                audio.play();
+            });
+        }
+
+        function pantallaSeguro() {
+            oscurecer(() => {
                 document.getElementById("pantalla1").style.display = "none";
                 document.getElementById("pantalla2").style.display = "flex";
                 crearOjos();
-            }, 2000);
+            });
         }
 
         function terminal() {
-            document.getElementById("pantalla2").style.display = "none";
-            document.getElementById("terminal").style.display = "block";
-            escribirTerminal();
+            oscurecer(() => {
+                document.getElementById("pantalla2").style.display = "none";
+                document.getElementById("terminal").style.display = "block";
+                escribirTerminal();
+            });
         }
 
         // BOTON NO SE MUEVE
@@ -238,16 +241,16 @@
             }
         }
 
-        // TERMINAL TEXTO
+        // TERMINAL LENTO
         function escribirTerminal() {
             let texto = [
+                "Conectando...",
                 "Accediendo al sistema...",
-                "Verificando usuario...",
-                "Acceso concedido...",
+                "Usuario detectado...",
                 "Descargando archivos...",
                 "Instalando...",
-                "ERROR...",
-                "No debiste entrar aquí...",
+                "Error...",
+                "No debiste entrar aqui...",
                 "Te estamos observando..."
             ];
 
@@ -266,9 +269,9 @@
                         if (j >= texto[i].length) {
                             clearInterval(intervalo);
                             i++;
-                            setTimeout(escribirLinea, 500);
+                            setTimeout(escribirLinea, 1500);
                         }
-                    }, 40);
+                    }, 80);
                 }
             }
 
