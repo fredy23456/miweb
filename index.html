@@ -13,7 +13,8 @@
             overflow: hidden;
         }
 
-        h1 {
+        /* SOLO LA PRIMERA PARTE NEON */
+        .titulo-neon {
             margin-top: 40px;
             text-shadow:
                 0 0 10px #ff00ff,
@@ -46,12 +47,14 @@
             border: none;
             cursor: pointer;
             background: linear-gradient(45deg, #ff00ff, #00ffff);
+            text-decoration: none;
         }
 
         .extra {
             margin-top: 40px;
         }
 
+        /* OSCURECER */
         .fade {
             position: fixed;
             top: 0;
@@ -61,10 +64,11 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 8s; /* MAS LENTO */
+            transition: opacity 6s;
             z-index: 10;
         }
 
+        /* PANTALLAS NEGRAS */
         .overlay {
             position: fixed;
             top: 0;
@@ -114,7 +118,7 @@
 
 <body>
 
-    <h1>Bienvenido a la comunidad de Tighti</h1>
+    <h1 class="titulo-neon">Bienvenido a la comunidad de Tighti</h1>
 
     <div class="container">
         <div class="card">
@@ -175,13 +179,12 @@
         function seguro() {
             document.getElementById("pantalla").style.display = "none";
             document.getElementById("pantalla2").style.display = "flex";
+            crearOjos(); // OJOS EN ESTA PANTALLA
         }
 
         function final() {
             let fade = document.getElementById("fade");
             fade.style.opacity = "1";
-
-            crearOjos();
         }
 
         // BOTON NO SE MUEVE
@@ -197,14 +200,24 @@
             }
         });
 
-        // CREAR OJOS POR TODA LA PANTALLA
+        // CREAR OJOS SIN TAPAR EL CENTRO
         function crearOjos() {
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 30; i++) {
                 let ojo = document.createElement("img");
-                ojo.src = "cara.png";
+                ojo.src = "ojo.png";
                 ojo.className = "ojo";
-                ojo.style.left = Math.random() * window.innerWidth + "px";
-                ojo.style.top = Math.random() * window.innerHeight + "px";
+
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+
+                if (x > window.innerWidth/3 && x < window.innerWidth/1.5 &&
+                    y > window.innerHeight/3 && y < window.innerHeight/1.5) {
+                    i--;
+                    continue;
+                }
+
+                ojo.style.left = x + "px";
+                ojo.style.top = y + "px";
                 document.body.appendChild(ojo);
             }
         }
