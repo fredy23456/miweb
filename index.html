@@ -13,9 +13,8 @@ body{
     overflow:hidden;
 }
 
-/* NEON PRINCIPAL */
-h1{
-    margin-top:40px;
+/* SOLO NEON EN LA PRINCIPAL */
+.neon{
     text-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
 }
 
@@ -58,7 +57,7 @@ button, a{
     pointer-events:none;
 }
 
-/* PANTALLAS */
+/* PANTALLAS NEGRAS */
 .screen{
     position:fixed;
     width:100%;
@@ -67,10 +66,25 @@ button, a{
     top:0;
     left:0;
     display:none;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
     z-index:200;
+}
+
+/* BOTONES LATERALES */
+.side{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.left{ left:40px; }
+.right{ right:40px; }
+
+/* CARA */
+.cara{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    width:150px;
 }
 
 /* OJOS */
@@ -105,7 +119,7 @@ button, a{
 </head>
 <body>
 
-<h1 id="titulo">Bienvenido a la comunidad de Tighti</h1>
+<h1 class="neon" id="titulo">Bienvenido a la comunidad de Tighti</h1>
 
 <div class="container" id="menu">
     <div class="card">
@@ -126,8 +140,9 @@ button, a{
 <!-- PANTALLA 1 -->
 <div class="screen" id="s1">
     <h1>¿Quieres conocer más?</h1>
-    <button onclick="pantalla2()">Sí</button>
-    <button id="no1">No</button>
+    <button class="side left" onclick="pantalla2()">Sí</button>
+    <button class="side right" id="no1">No</button>
+    <img src="cara.png" class="cara">
     <audio id="musica" loop>
         <source src="musica.mp3">
     </audio>
@@ -136,8 +151,8 @@ button, a{
 <!-- PANTALLA 2 -->
 <div class="screen" id="s2">
     <h1>¿Estás seguro?</h1>
-    <button onclick="terminal()">Estoy seguro</button>
-    <button id="no2">No</button>
+    <button class="side left" onclick="terminal()">Estoy seguro</button>
+    <button class="side right" id="no2">No</button>
 </div>
 
 <!-- TERMINAL -->
@@ -157,27 +172,25 @@ function oscurecer(callback){
     },2000);
 }
 
-/* PANTALLA 1 */
+/* PANTALLAS */
 function pantalla1(){
     oscurecer(()=>{
         document.getElementById("menu").style.display="none";
         document.getElementById("titulo").style.display="none";
         document.getElementById("btnInicio").style.display="none";
-        document.getElementById("s1").style.display="flex";
+        document.getElementById("s1").style.display="block";
         document.getElementById("musica").play();
     });
 }
 
-/* PANTALLA 2 */
 function pantalla2(){
     oscurecer(()=>{
         document.getElementById("s1").style.display="none";
-        document.getElementById("s2").style.display="flex";
+        document.getElementById("s2").style.display="block";
         crearOjos();
     });
 }
 
-/* TERMINAL */
 function terminal(){
     oscurecer(()=>{
         document.getElementById("s2").style.display="none";
@@ -186,9 +199,8 @@ function terminal(){
     });
 }
 
-/* BOTON NO */
+/* BOTON NO SE MUEVE */
 function mover(btn){
-    btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
     btn.style.top=Math.random()*window.innerHeight+"px";
 }
@@ -212,7 +224,7 @@ function crearOjos(){
     }
 }
 
-/* TERMINAL ESCRIBIENDO */
+/* TERMINAL */
 function escribirTerminal(){
     let lineas=[
         "Conectando...",
