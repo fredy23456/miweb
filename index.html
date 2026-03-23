@@ -62,7 +62,7 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 2s;
+            transition: opacity 3s;
             z-index: 10;
         }
 
@@ -102,12 +102,27 @@
             width: 150px;
         }
 
-        /* OJOS */
         .ojo {
             position: absolute;
             width: 60px;
             opacity: 0.4;
             pointer-events: none;
+        }
+
+        /* TERMINAL */
+        .terminal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 20px;
+            display: none;
+            text-align: left;
+            z-index: 30;
         }
 
     </style>
@@ -155,10 +170,13 @@
         <h1>¿Estás seguro?</h1>
 
         <div class="botones">
-            <button class="simple-btn" onclick="ir()">Sí</button>
+            <button class="simple-btn" onclick="terminal()">Sí estoy seguro</button>
             <button class="simple-btn" id="noBtn2">No</button>
         </div>
     </div>
+
+    <!-- TERMINAL -->
+    <div class="terminal" id="terminal"></div>
 
     <script>
         function mostrar() {
@@ -167,24 +185,31 @@
 
             setTimeout(() => {
                 document.getElementById("pantalla1").style.display = "flex";
-
                 let audio = document.getElementById("musica");
-                audio.currentTime = 0;
                 audio.play();
             }, 2000);
         }
 
         function pantallaSeguro() {
-            document.getElementById("pantalla1").style.display = "none";
-            document.getElementById("pantalla2").style.display = "flex";
-            crearOjos();
+            fade.style.opacity = "0";
+            setTimeout(() => {
+                fade.style.opacity = "1";
+            }, 100);
+
+            setTimeout(() => {
+                document.getElementById("pantalla1").style.display = "none";
+                document.getElementById("pantalla2").style.display = "flex";
+                crearOjos();
+            }, 2000);
         }
 
-        function ir() {
-            window.location.href = "https://google.com";
+        function terminal() {
+            document.getElementById("pantalla2").style.display = "none";
+            document.getElementById("terminal").style.display = "block";
+            escribirTerminal();
         }
 
-        // BOTONES NO SE MUEVEN
+        // BOTON NO SE MUEVE
         function moverNo(btn) {
             btn.style.position = "absolute";
             btn.style.left = Math.random() * window.innerWidth + "px";
@@ -197,29 +222,57 @@
             }
         });
 
-        // OJOS SOLO EN ¿ESTÁS SEGURO?
+        // OJOS
         function crearOjos() {
             let pantalla = document.getElementById("pantalla2");
 
-            for (let i = 0; i < 35; i++) {
+            for (let i = 0; i < 30; i++) {
                 let ojo = document.createElement("img");
                 ojo.src = "ojo.png";
                 ojo.className = "ojo";
 
-                let x = Math.random() * window.innerWidth;
-                let y = Math.random() * window.innerHeight;
-
-                if (x > window.innerWidth/3 && x < window.innerWidth/1.5 &&
-                    y > window.innerHeight/3 && y < window.innerHeight/1.5) {
-                    i--;
-                    continue;
-                }
-
-                ojo.style.left = x + "px";
-                ojo.style.top = y + "px";
+                ojo.style.left = Math.random() * window.innerWidth + "px";
+                ojo.style.top = Math.random() * window.innerHeight + "px";
 
                 pantalla.appendChild(ojo);
             }
+        }
+
+        // TERMINAL TEXTO
+        function escribirTerminal() {
+            let texto = [
+                "Accediendo al sistema...",
+                "Verificando usuario...",
+                "Acceso concedido...",
+                "Descargando archivos...",
+                "Instalando...",
+                "ERROR...",
+                "No debiste entrar aquí...",
+                "Te estamos observando..."
+            ];
+
+            let terminal = document.getElementById("terminal");
+            let i = 0;
+
+            function escribirLinea() {
+                if (i < texto.length) {
+                    let linea = document.createElement("div");
+                    terminal.appendChild(linea);
+
+                    let j = 0;
+                    let intervalo = setInterval(() => {
+                        linea.textContent += texto[i][j];
+                        j++;
+                        if (j >= texto[i].length) {
+                            clearInterval(intervalo);
+                            i++;
+                            setTimeout(escribirLinea, 500);
+                        }
+                    }, 40);
+                }
+            }
+
+            escribirLinea();
         }
     </script>
 
