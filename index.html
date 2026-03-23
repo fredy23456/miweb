@@ -15,6 +15,9 @@
 
         h1 {
             margin-top: 40px;
+            text-shadow:
+                0 0 10px #ff00ff,
+                0 0 20px #00ffff;
         }
 
         .container {
@@ -30,6 +33,9 @@
             width: 320px;
             padding: 30px;
             border-radius: 20px;
+            box-shadow:
+                0 0 20px #ff00ff,
+                0 0 40px #00ffff;
         }
 
         a, .btn-neon {
@@ -39,7 +45,7 @@
             color: white;
             border: none;
             cursor: pointer;
-            background: gray;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
             text-decoration: none;
         }
 
@@ -76,6 +82,10 @@
             z-index: 20;
         }
 
+        .overlay h1 {
+            text-shadow: none;
+        }
+
         .botones {
             display: flex;
             gap: 20px;
@@ -98,6 +108,7 @@
             width: 150px;
         }
 
+        /* OJOS */
         .ojo {
             position: absolute;
             width: 60px;
@@ -128,67 +139,74 @@
         }
 
     </style>
+
 </head>
 <body>
 
-<h1>Bienvenido a la comunidad de Tighti</h1>
+    <h1>Bienvenido a la comunidad de Tighti</h1>
 
-<div class="container">
-    <div class="card">
-        <h2>Discord</h2>
-        <a href="https://discord.gg/cruqhYg5" target="_blank">Unirse</a>
+    <div class="container">
+        <div class="card">
+            <h2>Discord</h2>
+            <a href="https://discord.gg/cruqhYg5" target="_blank">Unirse</a>
+        </div>
+
+        <div class="card">
+            <h2>Twitch</h2>
+            <a href="https://www.twitch.tv/tighty1" target="_blank">Ver canal</a>
+        </div>
     </div>
 
-    <div class="card">
-        <h2>Twitch</h2>
-        <a href="https://www.twitch.tv/tighty1" target="_blank">Ver canal</a>
+    <div class="extra">
+        <button class="btn-neon" onclick="mostrar()">Conocer más</button>
     </div>
-</div>
 
-<div class="extra">
-    <button class="btn-neon" onclick="mostrar()">Conocer más</button>
-</div>
+    <div class="fade" id="fade"></div>
 
-<div class="fade" id="fade"></div>
-
-<!-- PANTALLA 1 -->
-<div class="overlay" id="pantalla1">
-    <h1>¿Quieres conocer más?</h1>
-    <div class="botones">
-        <button class="simple-btn" onclick="pantallaSeguro()">Sí</button>
-        <button class="simple-btn" id="noBtn">No</button>
+    <!-- PANTALLA 1 -->
+    <div class="overlay" id="pantalla1">
+        <h1>¿Quieres conocer más?</h1>
+        <div class="botones">
+            <button class="simple-btn" onclick="pantallaSeguro()">Sí</button>
+            <button class="simple-btn" id="noBtn">No</button>
+        </div>
+        <img src="cara.png" class="imagen">
+        <audio id="musica" loop>
+            <source src="musica.mp3" type="audio/mpeg">
+        </audio>
     </div>
-    <img src="cara.png" class="imagen">
-    <audio id="musica" loop>
-        <source src="musica.mp3" type="audio/mpeg">
-    </audio>
-</div>
 
-<!-- PANTALLA 2 -->
-<div class="overlay" id="pantalla2">
-    <h1>¿Estás seguro?</h1>
-    <div class="botones">
-        <button class="simple-btn" onclick="terminal()">Estoy seguro</button>
-        <button class="simple-btn" id="noBtn2">No</button>
+    <!-- PANTALLA 2 -->
+    <div class="overlay" id="pantalla2">
+        <h1>¿Estás seguro?</h1>
+        <div class="botones">
+            <button class="simple-btn" onclick="terminal()">Estoy seguro</button>
+            <button class="simple-btn" id="noBtn2">No</button>
+        </div>
     </div>
-</div>
 
-<!-- TERMINAL -->
-<div class="terminal" id="terminal"></div>
+    <!-- TERMINAL -->
+    <div class="terminal" id="terminal"></div>
 
 <script>
 let fade = document.getElementById("fade");
 
-/* OSCURECER */
+/* OSCURECER SIEMPRE */
 function oscurecer(callback){
-    fade.style.opacity = "1";
+    fade.style.transition = "none";
+    fade.style.opacity = "0";
+
+    setTimeout(()=>{
+        fade.style.transition = "opacity 2s";
+        fade.style.opacity = "1";
+    },50);
+
     setTimeout(()=>{
         fade.style.opacity = "0";
-        setTimeout(callback,500);
+        callback();
     },2000);
 }
 
-/* CAMBIOS DE PANTALLA */
 function mostrar(){
     oscurecer(()=>{
         document.getElementById("pantalla1").style.display="flex";
@@ -212,7 +230,7 @@ function terminal(){
     });
 }
 
-/* BOTON NO */
+/* BOTON NO SE MUEVE */
 function moverNo(btn){
     btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
@@ -238,7 +256,7 @@ function crearOjos(){
     }
 }
 
-/* TERMINAL */
+/* TERMINAL TEXTO */
 function escribirTerminal(){
     let texto=[
         "Conectando...",
@@ -276,7 +294,7 @@ function escribirTerminal(){
     escribirLinea();
 }
 
-/* MENSAJES ROJOS POR TODA LA PANTALLA */
+/* MENSAJES ROJOS */
 function mensajesTerror(){
     let mensajes=[
         "Te estamos observando",
@@ -297,7 +315,7 @@ function mensajesTerror(){
         m.style.top=Math.random()*window.innerHeight+"px";
 
         document.body.appendChild(m);
-    },800);
+    },1500);
 }
 </script>
 
