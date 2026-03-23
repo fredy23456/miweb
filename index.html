@@ -1,17 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Comunidad Tighti</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(to right, black, #1a001a);
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin-top: 40px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #0a0a0a;
+            width: 320px;
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        a, .btn-neon {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border-radius: 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            background: gray;
+            text-decoration: none;
+        }
+
+        .extra {
+            margin-top: 40px;
+        }
+
+        /* OSCURECER */
+        .fade {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s;
+            z-index: 10;
+        }
+
+        /* PANTALLAS */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .botones {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .simple-btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            background: white;
+            color: black;
+            cursor: pointer;
+        }
+
+        .imagen {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+        }
+
+        .ojo {
+            position: absolute;
+            width: 60px;
+            opacity: 0.4;
+        }
+
+        /* TERMINAL */
+        .terminal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 20px;
+            display: none;
+            text-align: left;
+            z-index: 30;
+        }
+
+        /* MENSAJES ROJOS */
+        .terror {
+            position: absolute;
+            color: red;
+            font-size: 22px;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Bienvenido a la comunidad de Tighti</h1>
+
+<div class="container">
+    <div class="card">
+        <h2>Discord</h2>
+        <a href="https://discord.gg/cruqhYg5" target="_blank">Unirse</a>
+    </div>
+
+    <div class="card">
+        <h2>Twitch</h2>
+        <a href="https://www.twitch.tv/tighty1" target="_blank">Ver canal</a>
+    </div>
+</div>
+
+<div class="extra">
+    <button class="btn-neon" onclick="mostrar()">Conocer más</button>
+</div>
+
+<div class="fade" id="fade"></div>
+
+<!-- PANTALLA 1 -->
+<div class="overlay" id="pantalla1">
+    <h1>¿Quieres conocer más?</h1>
+    <div class="botones">
+        <button class="simple-btn" onclick="pantallaSeguro()">Sí</button>
+        <button class="simple-btn" id="noBtn">No</button>
+    </div>
+    <img src="cara.png" class="imagen">
+    <audio id="musica" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+</div>
+
+<!-- PANTALLA 2 -->
+<div class="overlay" id="pantalla2">
+    <h1>¿Estás seguro?</h1>
+    <div class="botones">
+        <button class="simple-btn" onclick="terminal()">Estoy seguro</button>
+        <button class="simple-btn" id="noBtn2">No</button>
+    </div>
+</div>
+
+<!-- TERMINAL -->
+<div class="terminal" id="terminal"></div>
+
 <script>
 let fade = document.getElementById("fade");
 
-/* OSCURECER SIEMPRE */
+/* OSCURECER */
 function oscurecer(callback){
-    fade.style.transition = "opacity 2s";
     fade.style.opacity = "1";
-
     setTimeout(()=>{
         fade.style.opacity = "0";
-        if(callback) callback();
+        setTimeout(callback,500);
     },2000);
 }
 
+/* CAMBIOS DE PANTALLA */
 function mostrar(){
     oscurecer(()=>{
         document.getElementById("pantalla1").style.display="flex";
@@ -35,11 +212,11 @@ function terminal(){
     });
 }
 
-/* BOTON NO SE MUEVE */
+/* BOTON NO */
 function moverNo(btn){
     btn.style.position="absolute";
-    btn.style.left=Math.random()*(window.innerWidth-100)+"px";
-    btn.style.top=Math.random()*(window.innerHeight-50)+"px";
+    btn.style.left=Math.random()*window.innerWidth+"px";
+    btn.style.top=Math.random()*window.innerHeight+"px";
 }
 
 document.addEventListener("mouseover",function(e){
@@ -61,7 +238,7 @@ function crearOjos(){
     }
 }
 
-/* TERMINAL TEXTO */
+/* TERMINAL */
 function escribirTerminal(){
     let texto=[
         "Conectando...",
@@ -74,7 +251,6 @@ function escribirTerminal(){
     ];
 
     let terminal=document.getElementById("terminal");
-    terminal.innerHTML="";
     let i=0;
 
     function escribirLinea(){
@@ -89,21 +265,18 @@ function escribirTerminal(){
                 if(j>=texto[i].length){
                     clearInterval(intervalo);
                     i++;
-                    setTimeout(escribirLinea,400);
+                    setTimeout(escribirLinea,500);
                 }
-            },30);
+            },40);
         }else{
-            /* CUANDO TERMINA EMPIEZAN MENSAJES ROJOS */
-            setTimeout(()=>{
-                mensajesTerror();
-            },1000);
+            mensajesTerror();
         }
     }
 
     escribirLinea();
 }
 
-/* MENSAJES ROJOS */
+/* MENSAJES ROJOS POR TODA LA PANTALLA */
 function mensajesTerror(){
     let mensajes=[
         "Te estamos observando",
@@ -124,6 +297,9 @@ function mensajesTerror(){
         m.style.top=Math.random()*window.innerHeight+"px";
 
         document.body.appendChild(m);
-    },1500);
+    },800);
 }
 </script>
+
+</body>
+</html>
