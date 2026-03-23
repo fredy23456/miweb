@@ -60,7 +60,7 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 3s;
+            transition: opacity 2s;
             z-index: 10;
         }
 
@@ -123,6 +123,15 @@
             z-index: 30;
         }
 
+        /* TEXTO ROJO */
+        .rojo {
+            position: absolute;
+            color: red;
+            font-family: monospace;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+
     </style>
 </head>
 <body>
@@ -180,12 +189,8 @@
         let fade = document.getElementById("fade");
 
         function oscurecer(callback) {
-            fade.style.opacity = "0";
-            setTimeout(() => {
-                fade.style.opacity = "1";
-            }, 100);
-
-            setTimeout(callback, 3000);
+            fade.style.opacity = "1";
+            setTimeout(callback, 2000);
         }
 
         function mostrar() {
@@ -241,7 +246,7 @@
             }
         }
 
-        // TERMINAL LENTO
+        // TERMINAL TEXTO
         function escribirTerminal() {
             let texto = [
                 "Conectando...",
@@ -249,9 +254,8 @@
                 "Usuario detectado...",
                 "Descargando archivos...",
                 "Instalando...",
-                "Error...",
-                "No debiste entrar aqui...",
-                "Te estamos observando..."
+                "ERROR...",
+                "No debiste entrar aqui..."
             ];
 
             let terminal = document.getElementById("terminal");
@@ -269,13 +273,39 @@
                         if (j >= texto[i].length) {
                             clearInterval(intervalo);
                             i++;
-                            setTimeout(escribirLinea, 1500);
+                            setTimeout(escribirLinea, 600);
                         }
-                    }, 80);
+                    }, 40);
+                } else {
+                    textoRojo();
                 }
             }
 
             escribirLinea();
+        }
+
+        // TEXTO ROJO POR LA PANTALLA
+        function textoRojo() {
+            let frases = [
+                "Te estamos viendo",
+                "No puedes salir",
+                "Ya es tarde",
+                "Error fatal",
+                "Sistema comprometido",
+                "Acceso total",
+                "Observando..."
+            ];
+
+            setInterval(() => {
+                let txt = document.createElement("div");
+                txt.className = "rojo";
+                txt.textContent = frases[Math.floor(Math.random() * frases.length)];
+
+                txt.style.left = Math.random() * window.innerWidth + "px";
+                txt.style.top = Math.random() * window.innerHeight + "px";
+
+                document.body.appendChild(txt);
+            }, 800);
         }
     </script>
 
