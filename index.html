@@ -13,7 +13,7 @@
             overflow: hidden;
         }
 
-        .titulo-neon {
+        h1 {
             margin-top: 40px;
             text-shadow:
                 0 0 10px #ff00ff,
@@ -46,14 +46,12 @@
             border: none;
             cursor: pointer;
             background: linear-gradient(45deg, #ff00ff, #00ffff);
-            text-decoration: none;
         }
 
         .extra {
             margin-top: 40px;
         }
 
-        /* OSCURECER */
         .fade {
             position: fixed;
             top: 0;
@@ -63,8 +61,8 @@
             background: black;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 8s;
-            z-index: 50;
+            transition: opacity 2s;
+            z-index: 10;
         }
 
         .overlay {
@@ -79,6 +77,10 @@
             align-items: center;
             flex-direction: column;
             z-index: 20;
+        }
+
+        .overlay h1 {
+            text-shadow: none;
         }
 
         .botones {
@@ -107,16 +109,15 @@
         .ojo {
             position: absolute;
             width: 60px;
-            opacity: 0.5;
+            opacity: 0.4;
             pointer-events: none;
         }
 
     </style>
 </head>
-
 <body>
 
-    <h1 class="titulo-neon">Bienvenido a la comunidad de Tighti</h1>
+    <h1>Bienvenido a la comunidad de Tighti</h1>
 
     <div class="container">
         <div class="card">
@@ -136,12 +137,13 @@
 
     <div class="fade" id="fade"></div>
 
-    <!-- PANTALLA 1 -->
+    <!-- PANTALLA -->
     <div class="overlay" id="pantalla">
-        <h1>¿Quieres conocer más?</h1>
+
+        <h1>¿Estás seguro que quieres conocer más?</h1>
 
         <div class="botones">
-            <button class="simple-btn" onclick="seguro()">Sí</button>
+            <button class="simple-btn" onclick="ir()">Sí</button>
             <button class="simple-btn" id="noBtn">No</button>
         </div>
 
@@ -150,39 +152,35 @@
         <audio id="musica" loop>
             <source src="musica.mp3" type="audio/mpeg">
         </audio>
-    </div>
 
-    <!-- PANTALLA 2 -->
-    <div class="overlay" id="pantalla2">
-        <h1>¿Estás seguro?</h1>
-
-        <div class="botones">
-            <button class="simple-btn" onclick="final()">Sí</button>
-            <button class="simple-btn" id="noBtn2">No</button>
-        </div>
     </div>
 
     <script>
         function mostrar() {
             let fade = document.getElementById("fade");
+
             fade.style.opacity = "1";
 
             setTimeout(() => {
                 document.getElementById("pantalla").style.display = "flex";
+
                 let audio = document.getElementById("musica");
+                audio.currentTime = 0;
                 audio.play();
+
+                crearOjos(); // AQUI APARECEN LOS OJOS
+
             }, 2000);
         }
 
-        function seguro() {
+        function cerrar() {
             document.getElementById("pantalla").style.display = "none";
-            document.getElementById("pantalla2").style.display = "flex";
-            crearOjos();
+            document.getElementById("fade").style.opacity = "0";
+            document.getElementById("musica").pause();
         }
 
-        function final() {
-            let fade = document.getElementById("fade");
-            fade.style.opacity = "1";
+        function ir() {
+            window.location.href = "https://google.com";
         }
 
         // BOTON NO SE MUEVE
@@ -193,16 +191,16 @@
         }
 
         document.addEventListener("mouseover", function(e) {
-            if (e.target.id === "noBtn" || e.target.id === "noBtn2") {
+            if (e.target.id === "noBtn") {
                 moverNo(e.target);
             }
         });
 
-        // OJOS EN TODA LA PANTALLA
+        // CREAR OJOS SIN TAPAR EL CENTRO
         function crearOjos() {
-            let pantalla = document.getElementById("pantalla2");
+            let pantalla = document.getElementById("pantalla");
 
-            for (let i = 0; i < 40; i++) {
+            for (let i = 0; i < 30; i++) {
                 let ojo = document.createElement("img");
                 ojo.src = "ojo.png";
                 ojo.className = "ojo";
