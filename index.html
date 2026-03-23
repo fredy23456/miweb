@@ -13,7 +13,7 @@ body{
     overflow:hidden;
 }
 
-/* SOLO NEON EN LA PRINCIPAL */
+/* SOLO TITULO NEON */
 .neon{
     text-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
 }
@@ -32,7 +32,8 @@ body{
     box-shadow:0 0 20px #ff00ff,0 0 40px #00ffff;
 }
 
-button, a{
+/* BOTON PRINCIPAL NEON */
+.btn-neon{
     padding:12px 25px;
     border-radius:20px;
     border:none;
@@ -40,7 +41,30 @@ button, a{
     color:white;
     cursor:pointer;
     margin-top:20px;
-    text-decoration:none;
+}
+
+/* BOTONES NORMALES (SI / NO) */
+.btn-normal{
+    padding:12px 25px;
+    border-radius:10px;
+    border:none;
+    background:white;
+    color:black;
+    cursor:pointer;
+    position:absolute;
+}
+
+/* POSICIONES LATERALES */
+.left{
+    left:60px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.right{
+    right:60px;
+    top:50%;
+    transform:translateY(-50%);
 }
 
 /* OSCURECER */
@@ -57,7 +81,7 @@ button, a{
     pointer-events:none;
 }
 
-/* PANTALLAS NEGRAS */
+/* PANTALLAS */
 .screen{
     position:fixed;
     width:100%;
@@ -68,16 +92,6 @@ button, a{
     display:none;
     z-index:200;
 }
-
-/* BOTONES LATERALES */
-.side{
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-}
-
-.left{ left:40px; }
-.right{ right:40px; }
 
 /* CARA */
 .cara{
@@ -133,15 +147,15 @@ button, a{
     </div>
 </div>
 
-<button onclick="pantalla1()" id="btnInicio">Conocer más</button>
+<button class="btn-neon" onclick="pantalla1()" id="btnInicio">Conocer más</button>
 
 <div class="fade" id="fade"></div>
 
 <!-- PANTALLA 1 -->
 <div class="screen" id="s1">
     <h1>¿Quieres conocer más?</h1>
-    <button class="side left" onclick="pantalla2()">Sí</button>
-    <button class="side right" id="no1">No</button>
+    <button class="btn-normal left" onclick="pantalla2()">Sí</button>
+    <button class="btn-normal right" id="no1">No</button>
     <img src="cara.png" class="cara">
     <audio id="musica" loop>
         <source src="musica.mp3">
@@ -151,8 +165,8 @@ button, a{
 <!-- PANTALLA 2 -->
 <div class="screen" id="s2">
     <h1>¿Estás seguro?</h1>
-    <button class="side left" onclick="terminal()">Estoy seguro</button>
-    <button class="side right" id="no2">No</button>
+    <button class="btn-normal left" onclick="terminal()">Estoy seguro</button>
+    <button class="btn-normal right" id="no2">No</button>
 </div>
 
 <!-- TERMINAL -->
@@ -264,7 +278,7 @@ function escribirTerminal(){
     escribirLinea();
 }
 
-/* TEXTOS ROJOS FINAL */
+/* TEXTOS ROJOS */
 function textosRojos(){
     let mensajes=[
         "Te estamos observando",
