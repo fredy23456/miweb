@@ -13,6 +13,7 @@ body{
     overflow:hidden;
 }
 
+/* NEON PRINCIPAL */
 h1{
     margin-top:40px;
     text-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
@@ -43,6 +44,7 @@ button, a{
     text-decoration:none;
 }
 
+/* OSCURECER */
 .fade{
     position:fixed;
     width:100%;
@@ -52,10 +54,11 @@ button, a{
     left:0;
     opacity:0;
     transition:opacity 2s;
-    z-index:5;
+    z-index:100;
     pointer-events:none;
 }
 
+/* PANTALLAS */
 .screen{
     position:fixed;
     width:100%;
@@ -67,15 +70,17 @@ button, a{
     justify-content:center;
     align-items:center;
     flex-direction:column;
-    z-index:10;
+    z-index:200;
 }
 
+/* OJOS */
 .ojo{
     position:absolute;
     width:60px;
     opacity:0.5;
 }
 
+/* TERMINAL */
 .terminal{
     position:fixed;
     width:100%;
@@ -86,15 +91,23 @@ button, a{
     padding:20px;
     text-align:left;
     display:none;
-    z-index:20;
+    z-index:300;
+}
+
+/* TEXTOS ROJOS */
+.rojo{
+    position:absolute;
+    color:red;
+    font-size:22px;
+    z-index:400;
 }
 </style>
 </head>
 <body>
 
-<h1>Bienvenido a la comunidad de Tighti</h1>
+<h1 id="titulo">Bienvenido a la comunidad de Tighti</h1>
 
-<div class="container">
+<div class="container" id="menu">
     <div class="card">
         <h2>Discord</h2>
         <a href="https://discord.gg/cruqhYg5">Unirse</a>
@@ -106,11 +119,11 @@ button, a{
     </div>
 </div>
 
-<button onclick="pantalla1()">Conocer más</button>
+<button onclick="pantalla1()" id="btnInicio">Conocer más</button>
 
 <div class="fade" id="fade"></div>
 
-<!-- Pantalla 1 -->
+<!-- PANTALLA 1 -->
 <div class="screen" id="s1">
     <h1>¿Quieres conocer más?</h1>
     <button onclick="pantalla2()">Sí</button>
@@ -120,38 +133,42 @@ button, a{
     </audio>
 </div>
 
-<!-- Pantalla 2 -->
+<!-- PANTALLA 2 -->
 <div class="screen" id="s2">
     <h1>¿Estás seguro?</h1>
     <button onclick="terminal()">Estoy seguro</button>
     <button id="no2">No</button>
 </div>
 
-<!-- Terminal -->
+<!-- TERMINAL -->
 <div class="terminal" id="terminal"></div>
 
 <script>
 let fade=document.getElementById("fade");
 
-/* Oscurecer */
+/* OSCURECER */
 function oscurecer(callback){
     fade.style.opacity="1";
     setTimeout(()=>{
         callback();
         setTimeout(()=>{
             fade.style.opacity="0";
-        },300);
+        },500);
     },2000);
 }
 
-/* Pantallas */
+/* PANTALLA 1 */
 function pantalla1(){
     oscurecer(()=>{
+        document.getElementById("menu").style.display="none";
+        document.getElementById("titulo").style.display="none";
+        document.getElementById("btnInicio").style.display="none";
         document.getElementById("s1").style.display="flex";
         document.getElementById("musica").play();
     });
 }
 
+/* PANTALLA 2 */
 function pantalla2(){
     oscurecer(()=>{
         document.getElementById("s1").style.display="none";
@@ -160,6 +177,7 @@ function pantalla2(){
     });
 }
 
+/* TERMINAL */
 function terminal(){
     oscurecer(()=>{
         document.getElementById("s2").style.display="none";
@@ -168,7 +186,7 @@ function terminal(){
     });
 }
 
-/* Botón NO se mueve */
+/* BOTON NO */
 function mover(btn){
     btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
@@ -181,10 +199,10 @@ document.addEventListener("mouseover",function(e){
     }
 });
 
-/* Ojos */
+/* OJOS */
 function crearOjos(){
     let s2=document.getElementById("s2");
-    for(let i=0;i<25;i++){
+    for(let i=0;i<30;i++){
         let ojo=document.createElement("img");
         ojo.src="ojo.png";
         ojo.className="ojo";
@@ -194,7 +212,7 @@ function crearOjos(){
     }
 }
 
-/* Terminal */
+/* TERMINAL ESCRIBIENDO */
 function escribirTerminal(){
     let lineas=[
         "Conectando...",
@@ -234,7 +252,7 @@ function escribirTerminal(){
     escribirLinea();
 }
 
-/* Textos rojos */
+/* TEXTOS ROJOS FINAL */
 function textosRojos(){
     let mensajes=[
         "Te estamos observando",
@@ -247,14 +265,12 @@ function textosRojos(){
 
     setInterval(()=>{
         let t=document.createElement("div");
-        t.style.position="absolute";
-        t.style.color="red";
-        t.style.fontSize="22px";
+        t.className="rojo";
         t.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
         t.style.left=Math.random()*window.innerWidth+"px";
         t.style.top=Math.random()*window.innerHeight+"px";
         document.body.appendChild(t);
-    },700);
+    },600);
 }
 </script>
 
