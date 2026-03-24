@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tighti</title>
+<title>Comunidad Tighti</title>
 
 <style>
 body{
     margin:0;
-    background:black;
+    background:linear-gradient(to right, black, #1a001a);
     color:white;
     font-family:Arial;
     text-align:center;
     overflow:hidden;
 }
 
-/* TITULOS */
-h1{
-    margin-top:40px;
+/* TITULO NEON SOLO INICIO */
+.neon{
+    text-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
 }
 
-/* CONTENEDOR */
 .container{
     display:flex;
     justify-content:center;
@@ -27,22 +26,67 @@ h1{
 }
 
 .card{
-    background:#111;
+    background:#0a0a0a;
     padding:30px;
-    border-radius:15px;
+    border-radius:20px;
+    box-shadow:0 0 20px #ff00ff,0 0 40px #00ffff;
 }
 
-/* BOTONES NORMALES */
-button{
-    padding:10px 20px;
+.btn-neon{
+    padding:12px 25px;
+    border-radius:20px;
     border:none;
-    border-radius:10px;
+    background:linear-gradient(45deg,#ff00ff,#00ffff);
+    color:white;
     cursor:pointer;
+    margin-top:20px;
 }
 
-/* BOTON EXTRA */
-.extra{
-    margin-top:40px;
+/* BOTONES SI / NO */
+.btn-normal{
+    padding:12px 25px;
+    border-radius:10px;
+    border:none;
+    background:white;
+    color:black;
+    cursor:pointer;
+    position:absolute;
+}
+
+.left{
+    left:60px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.right{
+    right:60px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+/* PANTALLAS CENTRADAS */
+.screen{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    top:0;
+    left:0;
+    display:none;
+    z-index:200;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+}
+
+/* TEXTO */
+.centerText{
+    font-size:32px;
+    text-align:center;
+    margin:0;
 }
 
 /* OSCURECER */
@@ -51,44 +95,27 @@ button{
     width:100%;
     height:100%;
     background:black;
+    top:0;
+    left:0;
     opacity:0;
     transition:opacity 2s;
-    z-index:10;
-}
-
-/* PANTALLAS */
-.overlay{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:black;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    z-index:20;
-}
-
-/* BOTONES CENTRADOS */
-.botones{
-    display:flex;
-    gap:20px;
-    margin-top:20px;
+    z-index:100;
+    pointer-events:none;
 }
 
 /* CARA */
-.imagen{
+.cara{
     position:absolute;
     bottom:20px;
     right:20px;
-    width:120px;
+    width:150px;
 }
 
 /* OJOS */
 .ojo{
     position:absolute;
     width:60px;
-    opacity:0.3;
+    opacity:0.5;
 }
 
 /* TERMINAL */
@@ -100,187 +127,226 @@ button{
     color:#00ff00;
     font-family:monospace;
     padding:20px;
-    display:none;
     text-align:left;
-    z-index:30;
+    display:none;
+    z-index:300;
 }
 
-/* TEXTO ROJO */
-.terror{
+/* TEXTOS ROJOS */
+.rojo{
     position:absolute;
     color:red;
     font-size:22px;
+    z-index:400;
 }
 
+/* FINAL */
+.final{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    color:red;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    z-index:500;
+}
 </style>
 </head>
-
 <body>
 
-<h1>Bienvenido</h1>
+<h1 class="neon" id="titulo">Bienvenido a la comunidad de Tighti</h1>
 
-<div class="container">
-    <div class="card">Discord</div>
-    <div class="card">Twitch</div>
+<div class="container" id="menu">
+    <div class="card">
+        <h2>Discord</h2>
+        <a href="https://discord.gg/cruqhYg5">Unirse</a>
+    </div>
+
+    <div class="card">
+        <h2>Twitch</h2>
+        <a href="https://www.twitch.tv/tighty1">Ver canal</a>
+    </div>
 </div>
 
-<div class="extra">
-    <button onclick="pantalla1()">Conocer más</button>
-</div>
+<button class="btn-neon" onclick="pantalla1()" id="btnInicio">Conocer más</button>
 
 <div class="fade" id="fade"></div>
 
 <!-- PANTALLA 1 -->
-<div class="overlay" id="p1">
-    <h1>¿Quieres conocer más?</h1>
-    <div class="botones">
-        <button onclick="pantalla2()">Sí</button>
-        <button>No</button>
-    </div>
-    <img src="cara.png" class="imagen">
+<div class="screen" id="s1">
+    <h1 class="centerText">¿Quieres conocer más?</h1>
+    <button class="btn-normal left" onclick="pantalla2()">Sí</button>
+    <button class="btn-normal right" id="no1">No</button>
+    <img src="cara.png" class="cara">
+    <audio id="musica" loop>
+        <source src="musica.mp3">
+    </audio>
 </div>
 
 <!-- PANTALLA 2 -->
-<div class="overlay" id="p2">
-    <h1>¿Estás seguro?</h1>
-    <div class="botones">
-        <button onclick="irTerminal()">Estoy seguro</button>
-        <button>No</button>
-    </div>
+<div class="screen" id="s2">
+    <h1 class="centerText">¿Estás seguro?</h1>
+    <button class="btn-normal left" onclick="terminal()">Estoy seguro</button>
+    <button class="btn-normal right" id="no2">No</button>
 </div>
 
 <!-- TERMINAL -->
 <div class="terminal" id="terminal"></div>
 
+<!-- FINAL -->
+<div class="final" id="final">
+    YA NO PUEDES SALIR
+</div>
+
 <script>
+let fade=document.getElementById("fade");
 
-let fade = document.getElementById("fade");
-
-/* EFECTO OSCURECER SIEMPRE */
-function cambiarPantalla(callback){
+/* OSCURECER */
+function oscurecer(callback){
     fade.style.opacity="1";
-
     setTimeout(()=>{
         callback();
-        fade.style.opacity="0";
+        setTimeout(()=>{
+            fade.style.opacity="0";
+        },500);
     },2000);
 }
 
 /* PANTALLAS */
 function pantalla1(){
-    cambiarPantalla(()=>{
-        document.getElementById("p1").style.display="flex";
+    oscurecer(()=>{
+        document.getElementById("menu").style.display="none";
+        document.getElementById("titulo").style.display="none";
+        document.getElementById("btnInicio").style.display="none";
+        document.getElementById("s1").style.display="flex";
+        document.getElementById("musica").play();
     });
 }
 
 function pantalla2(){
-    cambiarPantalla(()=>{
-        document.getElementById("p1").style.display="none";
-        document.getElementById("p2").style.display="flex";
+    oscurecer(()=>{
+        document.getElementById("s1").style.display="none";
+        document.getElementById("s2").style.display="flex";
         crearOjos();
     });
 }
 
-function irTerminal(){
-    cambiarPantalla(()=>{
-        document.getElementById("p2").style.display="none";
+function terminal(){
+    oscurecer(()=>{
+        document.getElementById("s2").style.display="none";
         document.getElementById("terminal").style.display="block";
-        escribir();
+        escribirTerminal();
     });
 }
 
+/* BOTON NO */
+function mover(btn){
+    btn.style.left=Math.random()*window.innerWidth+"px";
+    btn.style.top=Math.random()*window.innerHeight+"px";
+}
+
+document.addEventListener("mouseover",function(e){
+    if(e.target.id=="no1" || e.target.id=="no2"){
+        mover(e.target);
+    }
+});
+
 /* OJOS */
 function crearOjos(){
-    let p2 = document.getElementById("p2");
-
+    let s2=document.getElementById("s2");
     for(let i=0;i<25;i++){
         let ojo=document.createElement("img");
         ojo.src="ojo.png";
         ojo.className="ojo";
-
         ojo.style.left=Math.random()*window.innerWidth+"px";
         ojo.style.top=Math.random()*window.innerHeight+"px";
-
-        p2.appendChild(ojo);
+        s2.appendChild(ojo);
     }
 }
 
-/* TERMINAL TEXTO */
-function escribir(){
-    let texto=[
+/* TERMINAL */
+function escribirTerminal(){
+    let lineas=[
         "Conectando...",
-        "Acceso permitido...",
-        "Extrayendo datos...",
+        "Accediendo al sistema...",
+        "Usuario detectado...",
+        "Descargando archivos...",
+        "Instalando virus...",
         "ERROR...",
-        "No debiste entrar..."
+        "No debiste entrar aqui..."
     ];
 
-    let t=document.getElementById("terminal");
+    let term=document.getElementById("terminal");
     let i=0;
 
-    function linea(){
-        if(i<texto.length){
-            let div=document.createElement("div");
-            t.appendChild(div);
-
-            let j=0;
-
-            let inter=setInterval(()=>{
-                div.textContent+=texto[i][j];
-                j++;
-
-                if(j>=texto[i].length){
-                    clearInterval(inter);
-                    i++;
-                    setTimeout(linea,400);
-                }
-            },40);
-        }else{
-            terrorFinal();
+    function escribirLinea(){
+        if(i>=lineas.length){
+            textosRojos();
+            return;
         }
+
+        let div=document.createElement("div");
+        term.appendChild(div);
+
+        let j=0;
+        let inter=setInterval(()=>{
+            div.textContent+=lineas[i][j];
+            j++;
+
+            if(j>=lineas[i].length){
+                clearInterval(inter);
+                i++;
+                setTimeout(escribirLinea,500);
+            }
+        },40);
     }
 
-    linea();
+    escribirLinea();
 }
 
 /* TEXTOS ROJOS */
-function terrorFinal(){
-    let frases=[
-        "Te estoy viendo",
-        "No puedes escapar",
-        "Es muy tarde",
-        "Sigo aquí",
-        "Mira atrás"
+function textosRojos(){
+    let mensajes=[
+        "Te estamos observando",
+        "No puedes salir",
+        "Ya es tarde",
+        "Nunca debiste entrar",
+        "Sabemos quien eres",
+        "Tu camara esta activa"
     ];
 
-    let count=0;
+    let contador=0;
 
     let intervalo=setInterval(()=>{
-
         let t=document.createElement("div");
-        t.className="terror";
-        t.textContent=frases[Math.floor(Math.random()*frases.length)];
-
+        t.className="rojo";
+        t.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
         t.style.left=Math.random()*window.innerWidth+"px";
         t.style.top=Math.random()*window.innerHeight+"px";
-
         document.body.appendChild(t);
 
-        count++;
+        contador++;
 
-        if(count>=20){
+        if(contador>=20){
             clearInterval(intervalo);
-
-            document.body.style.background="red";
-
-            setTimeout(()=>{
-                window.close();
-            },2000);
+            finalMiedo();
         }
-
-    },500);
+    },600);
 }
 
+/* FINAL */
+function finalMiedo(){
+    setTimeout(()=>{
+        document.getElementById("final").style.display="flex";
+    },2000);
+
+    setTimeout(()=>{
+        window.close();
+    },6000);
+}
 </script>
 
 </body>
