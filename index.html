@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>¿Te atreves?</title>
+<title>NO DEBISTE ENTRAR</title>
 <style>
 body{
     margin:0;
@@ -15,15 +15,19 @@ body{
     align-items:center;
     height:100vh;
     overflow:hidden;
+    cursor:none;
 }
 
 #container{
     max-width:600px;
+    position:relative;
+    z-index:2;
 }
 
 h1{
-    font-size:30px;
+    font-size:32px;
     margin-bottom:20px;
+    text-shadow:0 0 10px white;
 }
 
 button{
@@ -41,8 +45,9 @@ button:hover{
     color:black;
 }
 
+/* Parpadeo */
 .flash{
-    animation:flash 0.2s infinite;
+    animation:flash 0.1s infinite;
 }
 
 @keyframes flash{
@@ -50,9 +55,44 @@ button:hover{
     50%{background:white;color:black;}
     100%{background:black;color:white;}
 }
+
+/* Imagen jumpscare */
+#jumpscare{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:url('cara.png') center/cover no-repeat;
+    display:none;
+    z-index:999;
+}
+
+/* Ojo que sigue */
+#eye{
+    position:fixed;
+    width:80px;
+    height:80px;
+    background:url('ojo.png') center/contain no-repeat;
+    pointer-events:none;
+    z-index:3;
+}
+
+/* Fondo oscuro animado */
+.dark{
+    animation:darkmove 2s infinite alternate;
+}
+
+@keyframes darkmove{
+    from{filter:brightness(1);} 
+    to{filter:brightness(0.3);} 
+}
 </style>
 </head>
-<body>
+<body class="dark">
+
+<div id="jumpscare"></div>
+<div id="eye"></div>
 
 <div id="container">
     <h1 id="question">¿Quieres jugar?</h1>
@@ -60,9 +100,12 @@ button:hover{
     <button onclick="answer(false)">No</button>
 </div>
 
-<!-- Música de terror -->
 <audio id="bgMusic" loop>
-    <source src="https://www.myinstants.com/media/sounds/creepy-ambience.mp3" type="audio/mpeg">
+    <source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="scream">
+    <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -72,13 +115,27 @@ let musicStarted = false;
 function startMusic(){
     const music = document.getElementById("bgMusic");
     if(!musicStarted){
+        music.volume = 0.4;
         music.play();
         musicStarted = true;
     }
 }
 
+function jumpscare(){
+    const j = document.getElementById("jumpscare");
+    const scream = document.getElementById("scream");
+
+    j.style.display = "block";
+    scream.volume = 1;
+    scream.play();
+
+    setTimeout(()=>{
+        j.style.display = "none";
+    },1000);
+}
+
 function answer(choice){
-    startMusic(); // inicia música al primer clic
+    startMusic();
 
     const q = document.getElementById("question");
     step++;
@@ -90,29 +147,28 @@ function answer(choice){
         q.innerText = "¿Estás solo?";
     }
     else if(step === 3){
-        q.innerText = choice ? "Eso crees..." : "Entonces mira detrás de ti...";
+        q.innerText = choice ? "Eso crees..." : "Mira detrás de ti...";
+        jumpscare();
     }
     else if(step === 4){
         q.innerText = "¿Escuchaste eso?";
     }
     else if(step === 5){
-        q.innerText = "Está más cerca de lo que piensas...";
+        q.innerText = "Está aquí contigo...";
     }
     else if(step === 6){
-        q.innerText = "Última pregunta...";
-    }
-    else if(step === 7){
-        q.innerText = "¿Quieres que te encuentre?";
-    }
-    else if(step === 8){
         document.body.classList.add("flash");
-        q.innerText = choice ? "Ya voy por ti..." : "Demasiado tarde...";
-
-        setTimeout(()=>{
-            q.innerText = "...";
-        },2000);
+        q.innerText = "No debiste entrar";
+        jumpscare();
     }
 }
+
+/* Ojo sigue al mouse */
+document.addEventListener("mousemove", (e)=>{
+    const eye = document.getElementById("eye");
+    eye.style.left = e.clientX + "px";
+    eye.style.top = e.clientY + "px";
+});
 </script>
 
 </body>
