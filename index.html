@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,18 +50,20 @@ body{
     background:white;
     color:black;
     cursor:pointer;
-    position:relative;
+    position:absolute;
 }
 
-/* CONTENEDOR BOTONES CENTRADOS */
-.botones{
+/* NUEVO: BOTONES CENTRADOS */
+.botonesCentro{
+    position:absolute;
+    top:60%;
+    left:50%;
+    transform:translateX(-50%);
     display:flex;
     gap:20px;
-    margin-top:20px;
-    justify-content:center;
 }
 
-/* PANTALLAS CENTRADAS */
+/* PANTALLAS */
 .screen{
     position:fixed;
     width:100%;
@@ -72,18 +73,14 @@ body{
     left:0;
     display:none;
     z-index:200;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
 }
 
-/* TEXTO */
+/* TEXTO CENTRO */
 .centerText{
-    font-size:32px;
-    text-align:center;
-    margin:0;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
 }
 
 /* OSCURECER */
@@ -123,11 +120,11 @@ body{
     background:black;
     color:#00ff00;
     font-family:monospace;
-    
+    padding:20px;
+    text-align:left;
     display:none;
     z-index:300;
 
-    display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:column;
@@ -180,21 +177,20 @@ body{
 <!-- PANTALLA 1 -->
 <div class="screen" id="s1">
     <h1 class="centerText">¿Quieres conocer más?</h1>
-    <div class="botones">
-        <button class="btn-normal" onclick="pantalla2()">Sí</button>
-        <button class="btn-normal" id="no1">No</button>
-    </div>
+    <button class="btn-normal left" onclick="pantalla2()">Sí</button>
+    <button class="btn-normal right" id="no1">No</button>
     <img src="cara.png" class="cara">
     <audio id="musica" loop>
         <source src="musica.mp3">
     </audio>
 </div>
 
-<!-- PANTALLA 2 -->
+<!-- PANTALLA 2 (ARREGLADA) -->
 <div class="screen" id="s2">
-    <h1 class="centerText">¿Estás seguro?</h1>
-    <div class="botones">
-        <button class="btn-normal" onclick="terminal()">Estoy seguro</button>
+    <h1 class="centerText">¿Estás seguro que quieres conocer más?</h1>
+
+    <div class="botonesCentro">
+        <button class="btn-normal" onclick="terminal()">Sí</button>
         <button class="btn-normal" id="no2">No</button>
     </div>
 </div>
@@ -225,7 +221,7 @@ function pantalla1(){
         document.getElementById("menu").style.display="none";
         document.getElementById("titulo").style.display="none";
         document.getElementById("btnInicio").style.display="none";
-        document.getElementById("s1").style.display="flex";
+        document.getElementById("s1").style.display="block";
         document.getElementById("musica").play();
     });
 }
@@ -233,7 +229,7 @@ function pantalla1(){
 function pantalla2(){
     oscurecer(()=>{
         document.getElementById("s1").style.display="none";
-        document.getElementById("s2").style.display="flex";
+        document.getElementById("s2").style.display="block";
         crearOjos();
     });
 }
@@ -246,9 +242,8 @@ function terminal(){
     });
 }
 
-/* BOTON NO QUE SE MUEVE */
+/* BOTON NO */
 function mover(btn){
-    btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
     btn.style.top=Math.random()*window.innerHeight+"px";
 }
