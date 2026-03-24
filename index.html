@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>NO DEBISTE ENTRAR</title>
+<title>El Pequeño Tighy</title>
 <style>
 body{
     margin:0;
@@ -24,9 +24,8 @@ body{
 }
 
 h1{
-    font-size:32px;
+    font-size:30px;
     margin-bottom:20px;
-    text-shadow:0 0 10px white;
 }
 
 button{
@@ -44,25 +43,23 @@ button:hover{
     color:black;
 }
 
-/* Parpadeo */
-.flash{
-    animation:flash 0.1s infinite;
-}
-
-@keyframes flash{
-    0%{background:black;color:white;}
-    50%{background:white;color:black;}
-    100%{background:black;color:white;}
-}
-
-/* Apariciones de cara */
 .face{
     position:fixed;
-    width:150px;
-    opacity:0.2;
+    width:120px;
+    opacity:0.15;
     pointer-events:none;
     z-index:1;
     display:none;
+}
+
+#tighy{
+    position:fixed;
+    width:80px;
+    height:80px;
+    background:white;
+    border-radius:50%;
+    display:none;
+    z-index:3;
 }
 </style>
 </head>
@@ -72,18 +69,18 @@ button:hover{
 <img src="cara.png" class="face" id="f2" style="bottom:10%;right:5%;">
 <img src="cara.png" class="face" id="f3" style="top:50%;left:80%;">
 
+<div id="tighy"></div>
+
 <div id="container">
-    <h1 id="question">¿Quieres jugar?</h1>
+    <h1 id="question">¿Quieres jugar con Tighy?</h1>
     <button onclick="answer(true)">Sí</button>
     <button onclick="answer(false)">No</button>
 </div>
 
-<!-- Música -->
 <audio id="bgMusic" loop>
     <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Sonido puerta -->
 <audio id="doorSound">
     <source src="puerta.mp3" type="audio/mpeg">
 </audio>
@@ -91,6 +88,7 @@ button:hover{
 <script>
 let step = 0;
 let musicStarted = false;
+let score = 0;
 
 function startMusic(){
     const music = document.getElementById("bgMusic");
@@ -104,22 +102,36 @@ function startMusic(){
 function showFaces(){
     document.querySelectorAll('.face').forEach(f=>{
         f.style.display = 'block';
-        setTimeout(()=>{f.style.display='none';}, 800);
+        setTimeout(()=>{f.style.display='none';}, 600);
     });
 }
 
 function playDoor(){
-    const music = document.getElementById("bgMusic");
     const door = document.getElementById("doorSound");
-
-    music.pause();
     door.volume = 1;
     door.play();
-
-    door.onended = () => {
-        music.play();
-    };
 }
+
+function spawnTighy(){
+    const t = document.getElementById("tighy");
+    t.style.display = "block";
+
+    const x = Math.random() * (window.innerWidth - 80);
+    const y = Math.random() * (window.innerHeight - 80);
+
+    t.style.left = x + "px";
+    t.style.top = y + "px";
+
+    setTimeout(()=>{
+        t.style.display = "none";
+    }, 1200);
+}
+
+// click en Tighy
+document.getElementById("tighy").addEventListener("click", ()=>{
+    score++;
+    document.getElementById("question").innerText = "Tighy atrapado: " + score;
+});
 
 function answer(choice){
     startMusic();
@@ -128,25 +140,22 @@ function answer(choice){
     step++;
 
     if(step === 1){
-        q.innerText = choice ? "Sabía que dirías que sí..." : "No puedes escapar...";
+        q.innerText = "Tighy se esconde... encuéntralo";
+        setInterval(spawnTighy, 1500);
     }
     else if(step === 2){
-        q.innerText = "¿Estás solo?";
+        q.innerText = "No le gusta que pierdas...";
+        showFaces();
     }
     else if(step === 3){
         q.innerText = "Escucha...";
-        showFaces();
-    }
-    else if(step === 4){
-        q.innerText = "...toc toc...";
         playDoor();
     }
-    else if(step === 5){
-        q.innerText = "Estoy afuera de tu casa";
+    else if(step === 4){
+        q.innerText = "Tighy ya no está jugando contigo";
     }
-    else if(step === 6){
-        document.body.classList.add("flash");
-        q.innerText = "No debiste entrar";
+    else if(step === 5){
+        q.innerText = "Tighy está en tu casa";
     }
 }
 </script>
