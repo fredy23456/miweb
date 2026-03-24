@@ -50,15 +50,22 @@ body{
     background:white;
     color:black;
     cursor:pointer;
-    position:absolute;
 }
 
-/* NUEVO: BOTONES CENTRADOS */
-.botonesCentro{
+/* CONTENEDOR CENTRADO */
+.centerBox{
     position:absolute;
-    top:60%;
+    top:50%;
     left:50%;
-    transform:translateX(-50%);
+    transform:translate(-50%,-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
+
+/* BOTONES ABAJO DEL TEXTO */
+.botones{
     display:flex;
     gap:20px;
 }
@@ -73,14 +80,6 @@ body{
     left:0;
     display:none;
     z-index:200;
-}
-
-/* TEXTO CENTRO */
-.centerText{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
 }
 
 /* OSCURECER */
@@ -120,11 +119,10 @@ body{
     background:black;
     color:#00ff00;
     font-family:monospace;
-    padding:20px;
-    text-align:left;
     display:none;
     z-index:300;
 
+    display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:column;
@@ -176,22 +174,29 @@ body{
 
 <!-- PANTALLA 1 -->
 <div class="screen" id="s1">
-    <h1 class="centerText">¿Quieres conocer más?</h1>
-    <button class="btn-normal left" onclick="pantalla2()">Sí</button>
-    <button class="btn-normal right" id="no1">No</button>
+    <div class="centerBox">
+        <h1>¿Quieres conocer más?</h1>
+        <div class="botones">
+            <button class="btn-normal" onclick="pantalla2()">Sí</button>
+            <button class="btn-normal" id="no1">No</button>
+        </div>
+    </div>
+
     <img src="cara.png" class="cara">
+
     <audio id="musica" loop>
         <source src="musica.mp3">
     </audio>
 </div>
 
-<!-- PANTALLA 2 (ARREGLADA) -->
+<!-- PANTALLA 2 -->
 <div class="screen" id="s2">
-    <h1 class="centerText">¿Estás seguro que quieres conocer más?</h1>
-
-    <div class="botonesCentro">
-        <button class="btn-normal" onclick="terminal()">Sí</button>
-        <button class="btn-normal" id="no2">No</button>
+    <div class="centerBox">
+        <h1>¿Estás seguro que quieres conocer más?</h1>
+        <div class="botones">
+            <button class="btn-normal" onclick="terminal()">Sí</button>
+            <button class="btn-normal" id="no2">No</button>
+        </div>
     </div>
 </div>
 
@@ -242,8 +247,9 @@ function terminal(){
     });
 }
 
-/* BOTON NO */
+/* BOTON NO SE MUEVE */
 function mover(btn){
+    btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
     btn.style.top=Math.random()*window.innerHeight+"px";
 }
