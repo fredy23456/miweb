@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,7 +43,7 @@ body{
     margin-top:20px;
 }
 
-/* BOTONES SI / NO */
+/* BOTONES */
 .btn-normal{
     padding:12px 25px;
     border-radius:10px;
@@ -50,19 +51,15 @@ body{
     background:white;
     color:black;
     cursor:pointer;
-    position:absolute;
+    position:relative;
 }
 
-.left{
-    left:60px;
-    top:50%;
-    transform:translateY(-50%);
-}
-
-.right{
-    right:60px;
-    top:50%;
-    transform:translateY(-50%);
+/* CONTENEDOR BOTONES CENTRADOS */
+.botones{
+    display:flex;
+    gap:20px;
+    margin-top:20px;
+    justify-content:center;
 }
 
 /* PANTALLAS CENTRADAS */
@@ -118,7 +115,7 @@ body{
     opacity:0.5;
 }
 
-/* TERMINAL */
+/* TERMINAL CENTRADA */
 .terminal{
     position:fixed;
     width:100%;
@@ -126,10 +123,14 @@ body{
     background:black;
     color:#00ff00;
     font-family:monospace;
-    padding:20px;
-    text-align:left;
+    
     display:none;
     z-index:300;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
 }
 
 /* TEXTOS ROJOS */
@@ -155,6 +156,7 @@ body{
 }
 </style>
 </head>
+
 <body>
 
 <h1 class="neon" id="titulo">Bienvenido a la comunidad de Tighti</h1>
@@ -178,8 +180,10 @@ body{
 <!-- PANTALLA 1 -->
 <div class="screen" id="s1">
     <h1 class="centerText">¿Quieres conocer más?</h1>
-    <button class="btn-normal left" onclick="pantalla2()">Sí</button>
-    <button class="btn-normal right" id="no1">No</button>
+    <div class="botones">
+        <button class="btn-normal" onclick="pantalla2()">Sí</button>
+        <button class="btn-normal" id="no1">No</button>
+    </div>
     <img src="cara.png" class="cara">
     <audio id="musica" loop>
         <source src="musica.mp3">
@@ -189,8 +193,10 @@ body{
 <!-- PANTALLA 2 -->
 <div class="screen" id="s2">
     <h1 class="centerText">¿Estás seguro?</h1>
-    <button class="btn-normal left" onclick="terminal()">Estoy seguro</button>
-    <button class="btn-normal right" id="no2">No</button>
+    <div class="botones">
+        <button class="btn-normal" onclick="terminal()">Estoy seguro</button>
+        <button class="btn-normal" id="no2">No</button>
+    </div>
 </div>
 
 <!-- TERMINAL -->
@@ -204,7 +210,6 @@ body{
 <script>
 let fade=document.getElementById("fade");
 
-/* OSCURECER */
 function oscurecer(callback){
     fade.style.opacity="1";
     setTimeout(()=>{
@@ -215,7 +220,6 @@ function oscurecer(callback){
     },2000);
 }
 
-/* PANTALLAS */
 function pantalla1(){
     oscurecer(()=>{
         document.getElementById("menu").style.display="none";
@@ -237,13 +241,14 @@ function pantalla2(){
 function terminal(){
     oscurecer(()=>{
         document.getElementById("s2").style.display="none";
-        document.getElementById("terminal").style.display="block";
+        document.getElementById("terminal").style.display="flex";
         escribirTerminal();
     });
 }
 
-/* BOTON NO */
+/* BOTON NO QUE SE MUEVE */
 function mover(btn){
+    btn.style.position="absolute";
     btn.style.left=Math.random()*window.innerWidth+"px";
     btn.style.top=Math.random()*window.innerHeight+"px";
 }
@@ -337,7 +342,6 @@ function textosRojos(){
     },600);
 }
 
-/* FINAL */
 function finalMiedo(){
     setTimeout(()=>{
         document.getElementById("final").style.display="flex";
