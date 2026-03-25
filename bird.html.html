@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bear Flap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0010;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+  }
+
+  #gameWrapper {
+    position: relative;
+    width: 400px;
+    height: 600px;
+  }
+
+  canvas {
+    display: block;
+    border: 3px solid #7b2fff;
+    box-shadow: 0 0 30px #7b2fff88, 0 0 60px #3d008866;
+    image-rendering: pixelated;
+  }
+
+  #ui {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  #score {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 22px;
+    text-shadow: 2px 2px #7b2fff, 0 0 10px #7b2fff;
+    letter-spacing: 2px;
+  }
+
+  #highscore {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #cc88ff;
+    font-size: 8px;
+    text-shadow: 1px 1px #3d0088;
+    white-space: nowrap;
+  }
+
+  #overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.75);
+    pointer-events: all;
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+
+  #overlay.hidden { opacity: 0; pointer-events: none; }
+
+  #overlay h1 {
+    color: #fff;
+    font-size: 20px;
+    text-shadow: 3px 3px #7b2fff;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    animation: pulse 1s infinite alternate;
+  }
+
+  #overlay .sub {
+    color: #cc88ff;
+    font-size: 8px;
+    margin-top: 6px;
+    text-align: center;
+    line-height: 2;
+  }
+
+  #overlay .tap-hint {
+    color: #fff;
+    font-size: 9px;
+    margin-top: 28px;
+    animation: blink 0.8s infinite;
+  }
+
+  @keyframes pulse {
+    from { text-shadow: 3px 3px #7b2fff, 0 0 10px #7b2fff; }
+    to   { text-shadow: 3px 3px #ff44cc, 0 0 20px #ff44cc; }
+  }
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50% { opacity:0; }
+  }
+
+  #gameoverScore {
+    color: #ffdd55;
+    font-size: 12px;
+    margin-top: 14px;
+    text-shadow: 2px 2px #a06000;
+  }
+</style>
+</head>
+<body>
+
+<div id="gameWrapper">
+  <canvas id="c" width="400" height="600"></canvas>
+  <div id="ui">
+    <div id="score">0</div>
+    <div id="highscore">BEST: 0</div>
+  </div>
+  <div id="overlay">
+    <h1>BEAR FLAP</h1>
+    <div class="sub">Con el Oso Ninja</div>
+    <div class="tap-hint">[ TAP / SPACE ]</div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 400, H = 600;
+
+// --- Load sprite ---
+const sprite = new Image();
+sprite.src = '/mnt/user-data/uploads/ChatGPT_Image_25_mar_2026__12_40_37_p_m_.png';
+
+// Encode the image from the uploaded file into the page
+// We'll draw a pixel-art version of the character via canvas instead
+// since file:// access doesn't work in artifacts. We'll draw a faithful
+// pixel recreation of the character.
+
+// ---- Game state ----
+let state = 'idle'; // idle | playing | dead
+let score = 0, best = 0;
+let bird, pipes, particles, frameCount;
+let bgStars = [];
+
+function initStars() {
+  bgStars = [];
+  for (let i = 0; i < 60; i++) {
+    bgStars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.5,
+      sp: Math.random() * 0.4 + 0.1,
+      a: Math.random()
+    });
+  }
+}
+
+function resetGame() {
+  score = 0;
+  frameCount = 0;
+  bird = {
+    x: 90, y: H / 2,
+    vy: 0,
+    w: 52, h: 60,
+    rotation: 0,
+    flapping: false,
+    flapTimer: 0
+  };
+  pipes = [];
+  particles = [];
+  initStars();
+}
+
+// ---- Input ----
+function flap() {
+  if (state === 'idle') {
+    state = 'playing';
+    document.getElementById('overlay').classList.add('hidden');
+  }
+  if (state === 'playing') {
+    bird.vy = -7.8;
+    bird.flapping = true;
+    bird.flapTimer = 8;
+    spawnParticles(bird.x + bird.w / 2, bird.y + bird.h / 2, '#cc55ff', 6);
+  }
+  if (state === 'dead') {
+    state = 'idle';
+    resetGame();
+    showOverlay('start');
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); flap(); }});
+document.getElementById('gameWrapper').addEventListener('click', flap);
+document.getElementById('gameWrapper').addEventListener('touchstart', e => { e.preventDefault(); flap(); }, {passive:false});
+
+// ---- Particles ----
+function spawnParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 3 + 1;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      color,
+      size: Math.random() * 5 + 2
+    });
+  }
+}
+
+// ---- Pipes ----
+const PIPE_W = 56;
+const GAP = 185;
+const PIPE_SPEED = 2.2;
+
+function spawnPipe() {
+  const minY = 80, maxY = H - GAP - 80;
+  const topH = Math.random() * (maxY - minY) + minY;
+  pipes.push({ x: W + 10, topH, scored: false });
+}
+
+// ---- Draw helpers ----
+function drawBg() {
+  // Dark purple gradient sky
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0a0018');
+  grad.addColorStop(1, '#1a0035');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars
+  bgStars.forEach(s => {
+    s.x -= s.sp;
+    if (s.x < 0) s.x = W;
+    s.a = 0.4 + 0.6 * Math.abs(Math.sin(frameCount * 0.02 + s.x));
+    ctx.globalAlpha = s.a;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(Math.round(s.x), Math.round(s.y), s.r * 2, s.r * 2);
+  });
+  ctx.globalAlpha = 1;
+
+  // Ground
+  ctx.fillStyle = '#1a0035';
+  ctx.fillRect(0, H - 40, W, 40);
+  ctx.fillStyle = '#7b2fff';
+  ctx.fillRect(0, H - 43, W, 3);
+  // ground pixel pattern
+  for (let x = 0; x < W; x += 16) {
+    ctx.fillStyle = '#5500bb';
+    ctx.fillRect(x, H - 43, 8, 3);
+  }
+}
+
+function drawPipe(pipe) {
+  const x = Math.round(pipe.x);
+  const topH = pipe.topH;
+  const botY = topH + GAP;
+  const botH = H - 40 - botY;
+
+  // Top pipe
+  const pg1 = ctx.createLinearGradient(x, 0, x + PIPE_W, 0);
+  pg1.addColorStop(0, '#4400aa');
+  pg1.addColorStop(0.4, '#7b2fff');
+  pg1.addColorStop(1, '#2a0066');
+  ctx.fillStyle = pg1;
+  ctx.fillRect(x, 0, PIPE_W, topH);
+
+  // Top cap
+  ctx.fillStyle = '#9944ff';
+  ctx.fillRect(x - 6, topH - 22, PIPE_W + 12, 22);
+  ctx.fillStyle = '#5500bb';
+  ctx.fillRect(x - 6, topH - 22, PIPE_W + 12, 4);
+
+  // Bottom pipe
+  ctx.fillStyle = pg1;
+  ctx.fillRect(x, botY, PIPE_W, botH);
+
+  // Bottom cap
+  ctx.fillStyle = '#9944ff';
+  ctx.fillRect(x - 6, botY, PIPE_W + 12, 22);
+  ctx.fillStyle = '#5500bb';
+  ctx.fillRect(x - 6, botY + 18, PIPE_W + 12, 4);
+
+  // Edge highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.fillRect(x + 4, 0, 4, topH - 22);
+  ctx.fillRect(x + 4, botY + 22, 4, botH - 22);
+}
+
+// --- Draw the character as pixel art ---
+function drawCharacter(x, y, rotation, flapping) {
+  ctx.save();
+  ctx.translate(Math.round(x + 26), Math.round(y + 30));
+  ctx.rotate(rotation);
+
+  const s = 3; // pixel scale
+
+  function px(col, row, w, h, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(col * s, row * s, w * s, h * s);
+  }
+
+  // Body (black hoodie)
+  px(-8, 2, 16, 14, '#111');
+
+  // Hood / bear ears
+  px(-8, -6, 4, 4, '#111');   // left ear
+  px(4, -6, 4, 4, '#111');    // right ear
+  px(-8, -4, 16, 8, '#111'); // hood
+
+  // Face
+  px(-5, -2, 10, 8, '#d4927a'); // skin
+
+  // Headband
+  px(-5, -2, 10, 2, '#888');
+  px(-1, -3, 2, 2, '#bbb'); // gem
+
+  // Eyes (red)
+  px(-4, 0, 3, 3, '#cc1111');
+  px(1, 0, 3, 3, '#cc1111');
+  // eye shine
+  px(-3, 0, 1, 1, '#ff4444');
+  px(2, 0, 1, 1, '#ff4444');
+
+  // Blush
+  ctx.globalAlpha = 0.5;
+  px(-5, 2, 2, 2, '#ff8888');
+  px(3, 2, 2, 2, '#ff8888');
+  ctx.globalAlpha = 1;
+
+  // Purple serpent / scarf
+  const bobY = flapping ? -1 : Math.sin(frameCount * 0.12) * 1;
+  ctx.fillStyle = '#6622bb';
+  // left loop
+  ctx.beginPath();
+  ctx.ellipse(-9 * s, (5 + bobY) * s, 4 * s, 3 * s, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+  // right part with face
+  ctx.beginPath();
+  ctx.ellipse(9 * s, (4 + bobY) * s, 4 * s, 3.5 * s, 0.3, 0, Math.PI * 2);
+  ctx.fill();
+  // connecting body
+  ctx.fillStyle = '#7b2fff';
+  ctx.fillRect(-6 * s, (3 + bobY) * s, 12 * s, 5 * s);
+  // serpent face
+  ctx.fillStyle = '#6622bb';
+  ctx.beginPath();
+  ctx.ellipse(10 * s, (3 + bobY) * s, 3.5 * s, 3 * s, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+  // serpent eyes
+  ctx.fillStyle = '#111';
+  ctx.fillRect(9 * s, (2 + bobY) * s, s, s);
+  ctx.fillRect(11 * s, (2 + bobY) * s, s, s);
+
+  // Arms / sleeves
+  ctx.fillStyle = '#111';
+  px(-10, 4, 3, 5, '#111');
+  px(7, 4, 3, 5, '#111');
+  // hands
+  px(-10, 9, 3, 2, '#d4927a');
+  px(7, 9, 3, 2, '#d4927a');
+
+  // Legs
+  px(-5, 14, 4, 6, '#111');
+  px(1, 14, 4, 6, '#111');
+
+  // Boots
+  px(-6, 19, 5, 3, '#0a0a0a');
+  px(1, 19, 5, 3, '#0a0a0a');
+
+  ctx.restore();
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(Math.round(p.x - p.size / 2), Math.round(p.y - p.size / 2), p.size, p.size);
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ---- Collision ----
+function checkCollision() {
+  const bx = bird.x + 16, by = bird.y + 14;
+  const bw = bird.w - 30, bh = bird.h - 28;
+
+  // Ground / ceiling
+  if (bird.y + bird.h > H - 40 || bird.y < 0) return true;
+
+  for (const pipe of pipes) {
+    const px = pipe.x - 4, pw = PIPE_W + 14;
+    const inX = bx + bw > px && bx < px + pw;
+    if (inX) {
+      if (by < pipe.topH || by + bh > pipe.topH + GAP) return true;
+    }
+  }
+  return false;
+}
+
+// ---- Game loop ----
+function update() {
+  if (state !== 'playing') return;
+  frameCount++;
+
+  // Bird physics
+  bird.vy += 0.35;
+  bird.vy = Math.min(bird.vy, 10);
+  bird.y += bird.vy;
+  bird.rotation = Math.min(Math.max(bird.vy * 0.05, -0.4), 0.6);
+
+  if (bird.flapTimer > 0) bird.flapTimer--;
+  else bird.flapping = false;
+
+  // Pipes
+  if (frameCount % 90 === 0) spawnPipe();
+  pipes.forEach(p => p.x -= PIPE_SPEED);
+  pipes = pipes.filter(p => p.x + PIPE_W + 20 > 0);
+
+  // Score
+  pipes.forEach(p => {
+    if (!p.scored && p.x + PIPE_W < bird.x) {
+      p.scored = true;
+      score++;
+      document.getElementById('score').textContent = score;
+      spawnParticles(bird.x + 26, bird.y + 30, '#ffdd44', 8);
+    }
+  });
+
+  // Particles
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.1;
+    p.life -= 0.06;
+  });
+  particles = particles.filter(p => p.life > 0);
+
+  // Collision
+  if (checkCollision()) {
+    state = 'dead';
+    if (score > best) best = score;
+    document.getElementById('highscore').textContent = 'BEST: ' + best;
+    spawnParticles(bird.x + 26, bird.y + 30, '#ff4444', 20);
+    showOverlay('dead');
+  }
+}
+
+function showOverlay(type) {
+  const ov = document.getElementById('overlay');
+  ov.innerHTML = '';
+  ov.classList.remove('hidden');
+
+  if (type === 'start') {
+    ov.innerHTML = `
+      <h1>BEAR FLAP</h1>
+      <div class="sub">Con el Oso Ninja</div>
+      <div class="tap-hint">[ TAP / SPACE ]</div>`;
+  } else {
+    ov.innerHTML = `
+      <h1>GAME OVER</h1>
+      <div id="gameoverScore">SCORE: ${score}</div>
+      <div class="sub">BEST: ${best}</div>
+      <div class="tap-hint">[ TAP PARA REINTENTAR ]</div>`;
+  }
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  drawBg();
+  pipes.forEach(drawPipe);
+  drawParticles();
+  drawCharacter(bird.x, bird.y, bird.rotation, bird.flapping);
+
+  // Ground scroll overlay
+  ctx.fillStyle = '#0a0018';
+  ctx.fillRect(0, H - 40, W, 40);
+  ctx.fillStyle = '#7b2fff';
+  ctx.fillRect(0, H - 43, W, 3);
+}
+
+function loop() {
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
+
+// ---- Init ----
+resetGame();
+loop();
+</script>
+</body>
+</html>
