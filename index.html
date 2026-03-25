@@ -14,7 +14,7 @@ body{
     overflow:hidden;
 }
 
-/* FONDO PRO SIN CUADRO */
+/* FONDO PRO */
 body::before{
     content:"";
     position:fixed;
@@ -27,17 +27,13 @@ body::before{
     z-index:-1;
 }
 
-/* TITULO */
+/* 🟠 TITULO NEON (SIN ANIMACION) */
 .neon{
     font-size:40px;
-    animation: glow 2s infinite alternate;
-}
-@keyframes glow{
-    from{ text-shadow:0 0 10px #ff00ff;}
-    to{ text-shadow:0 0 25px #00ffff;}
+    text-shadow:0 0 10px #ff00ff, 0 0 25px #00ffff;
 }
 
-/* LINKS IZQUIERDA */
+/* 🔴 LINKS IZQUIERDA */
 .container{
     position:fixed;
     left:40px;
@@ -57,7 +53,7 @@ body::before{
     width:150px;
 }
 
-/* MUSICA */
+/* 🟢 MUSICA */
 .musica{
     position:fixed;
     bottom:15px;
@@ -87,7 +83,7 @@ input[type="range"]{
     height:4px;
 }
 
-/* REGLAS */
+/* 🔵 REGLAS */
 .reglas{
     position:fixed;
     right:20px;
@@ -112,17 +108,6 @@ input[type="range"]{
     border-radius:10px;
     box-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
 }
-
-/* BOTON */
-.btn-neon{
-    padding:12px 25px;
-    border-radius:20px;
-    border:none;
-    background:linear-gradient(45deg,#ff00ff,#00ffff);
-    color:white;
-    cursor:pointer;
-    margin-top:20px;
-}
 </style>
 </head>
 
@@ -130,8 +115,9 @@ input[type="range"]{
 
 <h1 class="neon">Bienvenido a la comunidad de Tighti</h1>
 
-<!-- LINKS -->
+<!-- 🔴 LINKS -->
 <div class="container">
+
     <div class="card">
         <h2>Discord</h2>
         <a href="https://discord.gg/cruqhYg5">Unirse</a>
@@ -141,9 +127,20 @@ input[type="range"]{
         <h2>Twitch</h2>
         <a href="https://www.twitch.tv/tighty1">Ver canal</a>
     </div>
+
+    <div class="card">
+        <h2>TikTok</h2>
+        <a href="https://www.tiktok.com/@tighty11">Ver perfil</a>
+    </div>
+
+    <div class="card">
+        <h2>X</h2>
+        <a href="https://x.com/Tighty_1">Ver perfil</a>
+    </div>
+
 </div>
 
-<!-- MUSICA -->
+<!-- 🟢 MUSICA -->
 <div class="musica">
     <button class="music-btn" onclick="toggleMusic()" id="btnMusic">▶</button>
     <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="volumen(this.value)">
@@ -153,7 +150,7 @@ input[type="range"]{
     <source src="tighty_cansion.mp3">
 </audio>
 
-<!-- REGLAS -->
+<!-- 🔵 REGLAS -->
 <div class="reglas">
     <button onclick="toggleReglas()">☰ Reglas</button>
     <div class="lista" id="lista">
@@ -166,9 +163,6 @@ input[type="range"]{
         <p>✔ Diviértete 😎</p>
     </div>
 </div>
-
-<!-- BOTON FUNCIONAL -->
-<button class="btn-neon" onclick="modoOscuro()">Conocer más</button>
 
 <script>
 let music=document.getElementById("bgMusic");
@@ -193,12 +187,6 @@ function volumen(v){
 function toggleReglas(){
     let l=document.getElementById("lista");
     l.style.display=(l.style.display=="block")?"none":"block";
-}
-
-/* BOTON CONOCER MAS FUNCIONANDO */
-function modoOscuro(){
-    document.body.style.background="black";
-    document.body.innerHTML += "<h1 style='color:red;margin-top:200px;'>NO DEBISTE ENTRAR...</h1>";
 }
 </script>
 
