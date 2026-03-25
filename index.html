@@ -1,162 +1,359 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>El Pequeño Tighy</title>
+<title>Comunidad Tighti</title>
+
 <style>
 body{
     margin:0;
-    background:black;
+    background: url("tighti_fondo.png") no-repeat center center fixed;
+    background-size: cover;
     color:white;
-    font-family:Arial, sans-serif;
+    font-family:Arial;
     text-align:center;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
     overflow:hidden;
 }
 
-#container{
-    max-width:600px;
-    position:relative;
-    z-index:2;
+/* OSCURECER FONDO */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:-1;
 }
 
-h1{
-    font-size:30px;
-    margin-bottom:20px;
+/* TITULO NEON SOLO INICIO */
+.neon{
+    text-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
 }
 
-button{
-    padding:10px 20px;
-    margin:10px;
-    font-size:18px;
-    background:black;
+.container{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-top:60px;
+}
+
+.card{
+    background:#0a0a0a;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 0 20px #ff00ff,0 0 40px #00ffff;
+}
+
+.btn-neon{
+    padding:12px 25px;
+    border-radius:20px;
+    border:none;
+    background:linear-gradient(45deg,#ff00ff,#00ffff);
     color:white;
-    border:2px solid white;
     cursor:pointer;
+    margin-top:20px;
 }
 
-button:hover{
+/* BOTONES SI / NO */
+.btn-normal{
+    padding:12px 25px;
+    border-radius:10px;
+    border:none;
     background:white;
     color:black;
+    cursor:pointer;
+    position:absolute;
 }
 
-.face{
+.left{
+    left:60px;
+    top:50%;
+}
+
+.right{
+    right:60px;
+    top:50%;
+}
+
+/* PANTALLAS */
+.screen{
     position:fixed;
-    width:120px;
-    opacity:0.15;
+    width:100%;
+    height:100%;
+    background:black;
+    top:0;
+    left:0;
+    display:none;
+    z-index:200;
+}
+
+/* TEXTO CENTRO */
+.centerText{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+/* OSCURECER */
+.fade{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    top:0;
+    left:0;
+    opacity:0;
+    transition:opacity 2s;
+    z-index:100;
     pointer-events:none;
-    z-index:1;
-    display:none;
 }
 
-#tighy{
+/* CARA */
+.cara{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    width:150px;
+}
+
+/* OJOS */
+.ojo{
+    position:absolute;
+    width:60px;
+    opacity:0.5;
+}
+
+/* TERMINAL */
+.terminal{
     position:fixed;
-    width:80px;
-    height:80px;
-    background:white;
-    border-radius:50%;
+    width:100%;
+    height:100%;
+    background:black;
+    color:#00ff00;
+    font-family:monospace;
+    padding:20px;
+    text-align:left;
     display:none;
-    z-index:3;
+    z-index:300;
+}
+
+/* TEXTOS ROJOS */
+.rojo{
+    position:absolute;
+    color:red;
+    font-size:22px;
+    z-index:400;
+}
+
+/* MENSAJE FINAL */
+.final{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    color:red;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    z-index:500;
 }
 </style>
 </head>
 <body>
 
-<img src="cara.png" class="face" id="f1" style="top:10%;left:5%;">
-<img src="cara.png" class="face" id="f2" style="bottom:10%;right:5%;">
-<img src="cara.png" class="face" id="f3" style="top:50%;left:80%;">
+<h1 class="neon" id="titulo">Bienvenido a la comunidad de Tighti</h1>
 
-<div id="tighy"></div>
+<div class="container" id="menu">
+    <div class="card">
+        <h2>Discord</h2>
+        <a href="https://discord.gg/cruqhYg5">Unirse</a>
+    </div>
 
-<div id="container">
-    <h1 id="question">¿Quieres jugar con Tighy?</h1>
-    <button onclick="answer(true)">Sí</button>
-    <button onclick="answer(false)">No</button>
+    <div class="card">
+        <h2>Twitch</h2>
+        <a href="https://www.twitch.tv/tighty1">Ver canal</a>
+    </div>
 </div>
 
-<audio id="bgMusic" loop>
-    <source src="musica.mp3" type="audio/mpeg">
-</audio>
+<button class="btn-neon" onclick="pantalla1()" id="btnInicio">Conocer más</button>
 
-<audio id="doorSound">
-    <source src="puerta.mp3" type="audio/mpeg">
-</audio>
+<div class="fade" id="fade"></div>
+
+<!-- PANTALLA 1 -->
+<div class="screen" id="s1">
+    <h1 class="centerText">¿Quieres conocer más?</h1>
+    <button class="btn-normal left" onclick="pantalla2()">Sí</button>
+    <button class="btn-normal right" id="no1">No</button>
+    <img src="cara.png" class="cara">
+    <audio id="musica" loop>
+        <source src="musica.mp3">
+    </audio>
+</div>
+
+<!-- PANTALLA 2 -->
+<div class="screen" id="s2">
+    <h1 class="centerText">¿Estás seguro?</h1>
+    <button class="btn-normal left" onclick="terminal()">Estoy seguro</button>
+    <button class="btn-normal right" id="no2">No</button>
+</div>
+
+<!-- TERMINAL -->
+<div class="terminal" id="terminal"></div>
+
+<!-- FINAL -->
+<div class="final" id="final">
+    YA NO PUEDES SALIR
+</div>
 
 <script>
-let step = 0;
-let musicStarted = false;
-let score = 0;
+let fade=document.getElementById("fade");
 
-function startMusic(){
-    const music = document.getElementById("bgMusic");
-    if(!musicStarted){
-        music.volume = 0.4;
-        music.play();
-        musicStarted = true;
-    }
+/* OSCURECER */
+function oscurecer(callback){
+    fade.style.opacity="1";
+    setTimeout(()=>{
+        callback();
+        setTimeout(()=>{
+            fade.style.opacity="0";
+        },500);
+    },2000);
 }
 
-function showFaces(){
-    document.querySelectorAll('.face').forEach(f=>{
-        f.style.display = 'block';
-        setTimeout(()=>{f.style.display='none';}, 600);
+/* PANTALLAS */
+function pantalla1(){
+    oscurecer(()=>{
+        document.getElementById("menu").style.display="none";
+        document.getElementById("titulo").style.display="none";
+        document.getElementById("btnInicio").style.display="none";
+        document.getElementById("s1").style.display="block";
+        document.getElementById("musica").play();
     });
 }
 
-function playDoor(){
-    const door = document.getElementById("doorSound");
-    door.volume = 1;
-    door.play();
+function pantalla2(){
+    oscurecer(()=>{
+        document.getElementById("s1").style.display="none";
+        document.getElementById("s2").style.display="block";
+        crearOjos();
+    });
 }
 
-function spawnTighy(){
-    const t = document.getElementById("tighy");
-    t.style.display = "block";
-
-    const x = Math.random() * (window.innerWidth - 80);
-    const y = Math.random() * (window.innerHeight - 80);
-
-    t.style.left = x + "px";
-    t.style.top = y + "px";
-
-    setTimeout(()=>{
-        t.style.display = "none";
-    }, 1200);
+function terminal(){
+    oscurecer(()=>{
+        document.getElementById("s2").style.display="none";
+        document.getElementById("terminal").style.display="block";
+        escribirTerminal();
+    });
 }
 
-// click en Tighy
-document.getElementById("tighy").addEventListener("click", ()=>{
-    score++;
-    document.getElementById("question").innerText = "Tighy atrapado: " + score;
+/* BOTON NO SE MUEVE */
+function mover(btn){
+    btn.style.position="absolute";
+    btn.style.left=Math.random()*window.innerWidth+"px";
+    btn.style.top=Math.random()*window.innerHeight+"px";
+}
+
+document.addEventListener("mouseover",function(e){
+    if(e.target.id=="no1" || e.target.id=="no2"){
+        mover(e.target);
+    }
 });
 
-function answer(choice){
-    startMusic();
+/* OJOS */
+function crearOjos(){
+    let s2=document.getElementById("s2");
+    for(let i=0;i<25;i++){
+        let ojo=document.createElement("img");
+        ojo.src="ojo.png";
+        ojo.className="ojo";
+        ojo.style.left=Math.random()*window.innerWidth+"px";
+        ojo.style.top=Math.random()*window.innerHeight+"px";
+        s2.appendChild(ojo);
+    }
+}
 
-    const q = document.getElementById("question");
-    step++;
+/* TERMINAL */
+function escribirTerminal(){
+    let lineas=[
+        "Conectando...",
+        "Accediendo al sistema...",
+        "Usuario detectado...",
+        "Descargando archivos...",
+        "Instalando virus...",
+        "ERROR...",
+        "No debiste entrar aqui..."
+    ];
 
-    if(step === 1){
-        q.innerText = "Tighy se esconde... encuéntralo";
-        setInterval(spawnTighy, 1500);
+    let term=document.getElementById("terminal");
+    let i=0;
+
+    function escribirLinea(){
+        if(i>=lineas.length){
+            textosRojos();
+            return;
+        }
+
+        let div=document.createElement("div");
+        term.appendChild(div);
+
+        let j=0;
+        let inter=setInterval(()=>{
+            div.textContent+=lineas[i][j];
+            j++;
+
+            if(j>=lineas[i].length){
+                clearInterval(inter);
+                i++;
+                setTimeout(escribirLinea,500);
+            }
+        },40);
     }
-    else if(step === 2){
-        q.innerText = "No le gusta que pierdas...";
-        showFaces();
-    }
-    else if(step === 3){
-        q.innerText = "Escucha...";
-        playDoor();
-    }
-    else if(step === 4){
-        q.innerText = "Tighy ya no está jugando contigo";
-    }
-    else if(step === 5){
-        q.innerText = "Tighy está en tu casa";
-    }
+
+    escribirLinea();
+}
+
+/* TEXTOS ROJOS SOLO 20 */
+function textosRojos(){
+    let mensajes=[
+        "Te estamos observando",
+        "No puedes salir",
+        "Ya es tarde",
+        "Nunca debiste entrar",
+        "Sabemos quien eres",
+        "Tu camara esta activa"
+    ];
+
+    let contador=0;
+
+    let intervalo=setInterval(()=>{
+        let t=document.createElement("div");
+        t.className="rojo";
+        t.textContent=mensajes[Math.floor(Math.random()*mensajes.length)];
+        t.style.left=Math.random()*window.innerWidth+"px";
+        t.style.top=Math.random()*window.innerHeight+"px";
+        document.body.appendChild(t);
+
+        contador++;
+
+        if(contador>=20){
+            clearInterval(intervalo);
+            finalMiedo();
+        }
+    },600);
+}
+
+/* FINAL DE MIEDO */
+function finalMiedo(){
+    setTimeout(()=>{
+        document.getElementById("final").style.display="flex";
+    },2000);
+
+    setTimeout(()=>{
+        window.close();
+    },6000);
 }
 </script>
 
