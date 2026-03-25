@@ -14,17 +14,16 @@ body{
     overflow:hidden;
 }
 
-/* FONDO PRO */
-body::before{
-    content:"";
+/* FONDO OSCURO AL ABRIR MENU */
+.overlay-bg{
     position:fixed;
     top:0;
     left:0;
     width:100%;
     height:100%;
-    background:radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
-    pointer-events:none;
-    z-index:-1;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    z-index:5;
 }
 
 /* TITULO */
@@ -33,7 +32,7 @@ body::before{
     text-shadow:0 0 10px #ff00ff, 0 0 25px #00ffff;
 }
 
-/* BOTON PLAY NEON */
+/* BOTON PLAY */
 .play-btn{
     position:absolute;
     top:50%;
@@ -48,11 +47,60 @@ body::before{
     cursor:pointer;
     box-shadow:0 0 20px #ff00ff,0 0 40px #00ffff;
     transition:0.3s;
+    z-index:2;
 }
 
 .play-btn:hover{
     transform:translate(-50%,-50%) scale(1.1);
-    box-shadow:0 0 40px #ff00ff,0 0 80px #00ffff;
+}
+
+/* MENU JUEGOS */
+.menu-juegos{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(0);
+    background:rgba(0,0,0,0.95);
+    padding:40px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 0 30px #ff00ff,0 0 60px #00ffff;
+    transition:0.3s;
+    z-index:10;
+}
+
+.menu-juegos.show{
+    transform:translate(-50%,-50%) scale(1);
+}
+
+.menu-juegos h2{
+    margin-bottom:20px;
+    text-shadow:0 0 10px #00ffff;
+}
+
+.menu-juegos button{
+    display:block;
+    margin:15px auto;
+    padding:15px 30px;
+    font-size:18px;
+    color:white;
+    background:linear-gradient(45deg,#ff00ff,#00ffff);
+    border:none;
+    border-radius:15px;
+    cursor:pointer;
+    box-shadow:0 0 15px #ff00ff,0 0 25px #00ffff;
+    transition:0.2s;
+}
+
+.menu-juegos button:hover{
+    transform:scale(1.1);
+}
+
+/* BOTON CERRAR */
+.cerrar{
+    margin-top:20px;
+    background:#111;
+    box-shadow:0 0 10px red;
 }
 
 /* LINKS */
@@ -68,7 +116,6 @@ body::before{
 
 .card{
     background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(5px);
     padding:25px;
     border-radius:20px;
     box-shadow:0 0 15px #ff00ff,0 0 25px #00ffff;
@@ -119,7 +166,6 @@ body::before{
 .lista{
     display:none;
     background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(5px);
     padding:15px;
     margin-top:10px;
     border-radius:10px;
@@ -130,32 +176,41 @@ body::before{
 
 <body>
 
+<div class="overlay-bg" id="bg"></div>
+
 <h1 class="neon">Bienvenido a la comunidad de Tighti</h1>
 
-<!-- 🔥 BOTON PLAY -->
-<button class="play-btn" onclick="abrirJuego()">▶ PLAY</button>
+<!-- BOTON PLAY -->
+<button class="play-btn" onclick="mostrarMenu()">▶ PLAY</button>
+
+<!-- MENU -->
+<div id="menuJuegos" class="menu-juegos">
+
+    <h2>🎮 ELIGE TU JUEGO</h2>
+
+    <button onclick="abrirJuego('bird.html')">🐤 TIGHTY BIRD</button>
+    <button onclick="abrirJuego('juego.html')">☠ TIGHTY APOCALYPSE</button>
+
+    <button class="cerrar" onclick="cerrarMenu()">❌ Cerrar</button>
+
+</div>
 
 <!-- LINKS -->
 <div class="container">
 
     <div class="card">
         <h2>Discord</h2>
-        <a href="https://discord.gg/cruqhYg5">Unirse</a>
+        <a href="#">Unirse</a>
     </div>
 
     <div class="card">
         <h2>Twitch</h2>
-        <a href="https://www.twitch.tv/tighty1">Ver canal</a>
+        <a href="#">Ver canal</a>
     </div>
 
     <div class="card">
         <h2>TikTok</h2>
-        <a href="https://www.tiktok.com/@tighty11">Ver perfil</a>
-    </div>
-
-    <div class="card">
-        <h2>X</h2>
-        <a href="https://x.com/Tighty_1">Ver perfil</a>
+        <a href="#">Ver perfil</a>
     </div>
 
 </div>
@@ -163,32 +218,15 @@ body::before{
 <!-- MUSICA -->
 <div class="musica">
     <button class="music-btn" onclick="toggleMusic()" id="btnMusic">▶</button>
-    <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="volumen(this.value)">
 </div>
 
 <audio id="bgMusic" loop autoplay>
     <source src="tighty_cansion.mp3">
 </audio>
 
-<!-- REGLAS -->
-<div class="reglas">
-    <button onclick="toggleReglas()">☰ Reglas</button>
-    <div class="lista" id="lista">
-        <p>✔ No spam</p>
-        <p>✔ Respeto a todos</p>
-        <p>✔ No insultos</p>
-        <p>✔ No contenido +18</p>
-        <p>✔ No links sospechosos</p>
-        <p>✔ Sigue a los admins</p>
-        <p>✔ Diviértete 😎</p>
-    </div>
-</div>
-
 <script>
 let music=document.getElementById("bgMusic");
 let btn=document.getElementById("btnMusic");
-
-music.volume=0.5;
 
 function toggleMusic(){
     if(music.paused){
@@ -200,18 +238,19 @@ function toggleMusic(){
     }
 }
 
-function volumen(v){
-    music.volume=v;
+/* MENU */
+function mostrarMenu(){
+    document.getElementById("menuJuegos").classList.add("show");
+    document.getElementById("bg").style.display="block";
 }
 
-function toggleReglas(){
-    let l=document.getElementById("lista");
-    l.style.display=(l.style.display=="block")?"none":"block";
+function cerrarMenu(){
+    document.getElementById("menuJuegos").classList.remove("show");
+    document.getElementById("bg").style.display="none";
 }
 
-/* 🔥 ABRIR JUEGO */
-function abrirJuego(){
-    window.open("juego.html","_blank");
+function abrirJuego(juego){
+    window.open(juego, "_blank");
 }
 </script>
 
