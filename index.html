@@ -1,192 +1,148 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Comunidad Tighti</title>
+<title>Tighty Game</title>
 
 <style>
 body{
     margin:0;
-    background: url("tighti.png") no-repeat center center fixed;
-    background-size: cover;
+    background:black;
     color:white;
-    font-family:Arial;
     text-align:center;
+    font-family:Arial;
     overflow:hidden;
 }
 
-/* FONDO PRO */
-body::before{
-    content:"";
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
-    pointer-events:none;
-    z-index:-1;
-}
-
-/* 🟠 TITULO NEON (SIN ANIMACION) */
-.neon{
-    font-size:40px;
-    text-shadow:0 0 10px #ff00ff, 0 0 25px #00ffff;
-}
-
-/* 🔴 LINKS IZQUIERDA */
-.container{
-    position:fixed;
-    left:40px;
+/* BOTON PLAY */
+.play-btn{
+    position:absolute;
     top:50%;
-    transform:translateY(-50%);
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-}
-
-.card{
-    background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(5px);
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 0 15px #ff00ff,0 0 25px #00ffff;
-    width:150px;
-}
-
-/* 🟢 MUSICA */
-.musica{
-    position:fixed;
-    bottom:15px;
     left:50%;
-    transform:translateX(-50%);
-    background:rgba(0,0,0,0.6);
-    padding:8px 15px;
-    border-radius:30px;
-    box-shadow:0 0 10px #00ffff;
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.music-btn{
+    transform:translate(-50%,-50%);
+    font-size:40px;
+    padding:20px 60px;
+    border:none;
+    border-radius:20px;
     background:linear-gradient(45deg,#ff00ff,#00ffff);
-    border:none;
     color:white;
-    font-size:16px;
-    padding:6px 10px;
-    border-radius:50%;
     cursor:pointer;
+    box-shadow:0 0 30px #ff00ff,0 0 50px #00ffff;
 }
 
-input[type="range"]{
-    width:120px;
-    height:4px;
-}
-
-/* 🔵 REGLAS */
-.reglas{
-    position:fixed;
-    right:20px;
-    top:20px;
-}
-
-.reglas button{
-    background:black;
-    color:white;
-    border:none;
-    padding:10px;
-    box-shadow:0 0 10px #00ffff;
-    cursor:pointer;
-}
-
-.lista{
+/* CANVAS */
+canvas{
     display:none;
-    background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(5px);
-    padding:15px;
-    margin-top:10px;
-    border-radius:10px;
-    box-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
+    background:#111;
 }
 </style>
 </head>
 
 <body>
 
-<h1 class="neon">Bienvenido a la comunidad de Tighti</h1>
+<button class="play-btn" onclick="startGame()">PLAY</button>
 
-<!-- 🔴 LINKS -->
-<div class="container">
-
-    <div class="card">
-        <h2>Discord</h2>
-        <a href="https://discord.gg/cruqhYg5">Unirse</a>
-    </div>
-
-    <div class="card">
-        <h2>Twitch</h2>
-        <a href="https://www.twitch.tv/tighty1">Ver canal</a>
-    </div>
-
-    <div class="card">
-        <h2>TikTok</h2>
-        <a href="https://www.tiktok.com/@tighty11">Ver perfil</a>
-    </div>
-
-    <div class="card">
-        <h2>X</h2>
-        <a href="https://x.com/Tighty_1">Ver perfil</a>
-    </div>
-
-</div>
-
-<!-- 🟢 MUSICA -->
-<div class="musica">
-    <button class="music-btn" onclick="toggleMusic()" id="btnMusic">▶</button>
-    <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="volumen(this.value)">
-</div>
-
-<audio id="bgMusic" loop autoplay>
-    <source src="tighty_cansion.mp3">
-</audio>
-
-<!-- 🔵 REGLAS -->
-<div class="reglas">
-    <button onclick="toggleReglas()">☰ Reglas</button>
-    <div class="lista" id="lista">
-        <p>✔ No spam</p>
-        <p>✔ Respeto a todos</p>
-        <p>✔ No insultos</p>
-        <p>✔ No contenido +18</p>
-        <p>✔ No links sospechosos</p>
-        <p>✔ Sigue a los admins</p>
-        <p>✔ Diviértete 😎</p>
-    </div>
-</div>
+<canvas id="game" width="400" height="600"></canvas>
 
 <script>
-let music=document.getElementById("bgMusic");
-let btn=document.getElementById("btnMusic");
+let canvas=document.getElementById("game");
+let ctx=canvas.getContext("2d");
 
-music.volume=0.5;
+let playerImg=new Image();
+playerImg.src="tighty_game.png";
 
-function toggleMusic(){
-    if(music.paused){
-        music.play();
-        btn.textContent="⏸";
-    }else{
-        music.pause();
-        btn.textContent="▶";
+let y=300;
+let velocity=0;
+let gravity=0.5;
+let jump=-8;
+
+let pipes=[];
+let score=0;
+let lives=3;
+let gameRunning=false;
+
+function startGame(){
+    document.querySelector(".play-btn").style.display="none";
+    canvas.style.display="block";
+    gameRunning=true;
+    loop();
+}
+
+document.addEventListener("keydown",()=>{
+    velocity=jump;
+});
+
+function createPipe(){
+    let gap=150;
+    let top=Math.random()*300;
+
+    pipes.push({
+        x:400,
+        top:top,
+        bottom:top+gap
+    });
+}
+
+function loop(){
+    if(!gameRunning) return;
+
+    ctx.clearRect(0,0,400,600);
+
+    // jugador
+    velocity+=gravity;
+    y+=velocity;
+
+    ctx.drawImage(playerImg,50,y,50,50);
+
+    // tubos
+    for(let i=0;i<pipes.length;i++){
+        let p=pipes[i];
+        p.x-=3;
+
+        ctx.fillStyle="cyan";
+        ctx.fillRect(p.x,0,50,p.top);
+        ctx.fillRect(p.x,p.bottom,50,600);
+
+        // colision
+        if(50+50>p.x && 50<p.x+50){
+            if(y<p.top || y+50>p.bottom){
+                loseLife();
+            }
+        }
+
+        if(p.x<0){
+            pipes.splice(i,1);
+            score++;
+        }
     }
+
+    // crear tubos
+    if(Math.random()<0.02){
+        createPipe();
+    }
+
+    // suelo
+    if(y>550){
+        loseLife();
+    }
+
+    // HUD
+    ctx.fillStyle="white";
+    ctx.font="20px Arial";
+    ctx.fillText("Score: "+score,10,20);
+    ctx.fillText("Vidas: "+lives,10,50);
+
+    requestAnimationFrame(loop);
 }
 
-function volumen(v){
-    music.volume=v;
-}
+function loseLife(){
+    lives--;
+    y=300;
+    velocity=0;
 
-function toggleReglas(){
-    let l=document.getElementById("lista");
-    l.style.display=(l.style.display=="block")?"none":"block";
+    if(lives<=0){
+        alert("Game Over 😈 Score: "+score);
+        location.reload();
+    }
 }
 </script>
 
