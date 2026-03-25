@@ -1,150 +1,687 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tighty Game</title>
-
+<title>Comunidad Tighti</title>
 <style>
-body{
-    margin:0;
-    background:black;
-    color:white;
-    text-align:center;
-    font-family:Arial;
-    overflow:hidden;
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Press+Start+2P&display=swap');
+
+body {
+  margin:0;
+  background: url("tighti.png") no-repeat center center fixed;
+  background-size: cover;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  overflow:hidden;
+}
+body::before {
+  content:"";
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
+  pointer-events:none; z-index:-1;
 }
 
-/* BOTON PLAY */
-.play-btn{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    font-size:40px;
-    padding:20px 60px;
-    border:none;
-    border-radius:20px;
-    background:linear-gradient(45deg,#ff00ff,#00ffff);
-    color:white;
-    cursor:pointer;
-    box-shadow:0 0 30px #ff00ff,0 0 50px #00ffff;
+/* TITULO */
+.neon {
+  font-size:40px;
+  text-shadow:0 0 10px #ff00ff, 0 0 25px #00ffff;
+  margin-top:18px;
 }
 
-/* CANVAS */
-canvas{
-    display:none;
-    background:#111;
+/* LINKS IZQUIERDA */
+.container {
+  position:fixed; left:40px; top:50%;
+  transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:20px;
 }
+.card {
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(5px);
+  padding:25px; border-radius:20px;
+  box-shadow:0 0 15px #ff00ff,0 0 25px #00ffff;
+  width:150px;
+}
+.card a { color:#00ffff; text-decoration:none; }
+.card a:hover { color:#ff00ff; }
+
+/* MUSICA */
+.musica {
+  position:fixed; bottom:15px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.6); padding:8px 15px; border-radius:30px;
+  box-shadow:0 0 10px #00ffff;
+  display:flex; align-items:center; gap:10px; z-index:5;
+}
+.music-btn {
+  background:linear-gradient(45deg,#ff00ff,#00ffff);
+  border:none; color:white; font-size:16px;
+  padding:6px 10px; border-radius:50%; cursor:pointer;
+}
+input[type="range"] { width:120px; height:4px; }
+
+/* REGLAS */
+.reglas { position:fixed; right:20px; top:20px; z-index:5; }
+.reglas button {
+  background:black; color:white; border:none;
+  padding:10px; box-shadow:0 0 10px #00ffff; cursor:pointer;
+}
+.lista {
+  display:none; background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(5px); padding:15px; margin-top:10px;
+  border-radius:10px;
+  box-shadow:0 0 10px #ff00ff,0 0 20px #00ffff;
+  text-align:left;
+}
+
+/* ══════════════════════════════════════
+   BOTÓN JUGAR — centrado en pantalla
+══════════════════════════════════════ */
+#btn-jugar-wrap {
+  position:fixed;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+
+#btn-jugar {
+  font-family:'Press Start 2P', monospace;
+  font-size:14px;
+  color:#fff;
+  background:transparent;
+  border:2px solid #ff00ff;
+  padding:18px 36px;
+  border-radius:8px;
+  cursor:pointer;
+  letter-spacing:2px;
+  position:relative;
+  overflow:hidden;
+  text-shadow:0 0 10px #ff00ff, 0 0 20px #00ffff;
+  box-shadow:
+    0 0 12px #ff00ff,
+    0 0 28px #ff00ff55,
+    0 0 50px #00ffff33,
+    inset 0 0 12px rgba(255,0,255,0.15);
+  animation: neonPulse 2s ease-in-out infinite;
+  transition: transform .15s;
+}
+#btn-jugar:hover {
+  transform: scale(1.07);
+  box-shadow:
+    0 0 22px #ff00ff,
+    0 0 50px #ff00ffaa,
+    0 0 80px #00ffff66,
+    inset 0 0 20px rgba(0,255,255,0.2);
+}
+#btn-jugar:active { transform:scale(0.97); }
+
+/* sweep shine */
+#btn-jugar::after {
+  content:'';
+  position:absolute; top:0; left:-100%;
+  width:60%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  animation:sweep 2.8s ease-in-out infinite;
+}
+
+.btn-sub {
+  font-family:'Creepster',cursive;
+  font-size:16px;
+  color:#cc88ff;
+  text-shadow:0 0 8px #cc88ff;
+  animation:blink2 2s ease-in-out infinite;
+  letter-spacing:1px;
+}
+
+@keyframes neonPulse {
+  0%,100%{ box-shadow:0 0 12px #ff00ff,0 0 28px #ff00ff55,0 0 50px #00ffff33,inset 0 0 12px rgba(255,0,255,0.15); }
+  50%    { box-shadow:0 0 22px #ff00ff,0 0 55px #ff00ffaa,0 0 90px #00ffff66,inset 0 0 22px rgba(0,255,255,0.25); }
+}
+@keyframes sweep { 0%{left:-100%} 60%,100%{left:160%} }
+@keyframes blink2 { 0%,100%{opacity:1}50%{opacity:.4} }
+
+/* ══════════════════════════════════════
+   MODAL DEL JUEGO
+══════════════════════════════════════ */
+#game-modal {
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.92);
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+#game-modal.show { display:flex; }
+
+#close-game {
+  position:absolute; top:16px; right:22px;
+  background:transparent; border:2px solid #ff00ff;
+  color:#ff00ff; font-size:18px; font-family:'Press Start 2P',monospace;
+  padding:8px 14px; cursor:pointer; border-radius:6px;
+  box-shadow:0 0 12px #ff00ff;
+  transition:all .2s; z-index:101;
+}
+#close-game:hover { background:#ff00ff22; transform:scale(1.08); }
+
+/* ─── game CSS (namespaced inside modal) ─── */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+:root { --blood:#8b0000; --ggreen:#39ff14; --purple:#7b2fff; }
+
+#game-wrap {
+  position:relative; width:520px; height:640px;
+}
+#gc {
+  display:block; image-rendering:pixelated;
+  border:3px solid var(--blood);
+  box-shadow:0 0 40px #8b000099,0 0 80px #8b000033;
+  cursor:crosshair;
+}
+#ghud {
+  position:absolute; top:0; left:0; width:100%;
+  pointer-events:none; padding:8px 12px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+}
+#ghud-left { display:flex; flex-direction:column; gap:4px; }
+.ghl { color:var(--ggreen); font-size:7px; font-family:'Press Start 2P',monospace; text-shadow:0 0 6px var(--ggreen); }
+#greload-txt { color:#ff4400; font-size:7px; font-family:'Press Start 2P',monospace; display:none; animation:gblink .4s infinite; }
+#gwave-center {
+  position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  color:#ff4400; font-size:8px; font-family:'Press Start 2P',monospace;
+  text-shadow:0 0 10px #ff4400; white-space:nowrap;
+}
+#gammo-bar { display:flex; gap:2px; flex-wrap:wrap; max-width:90px; margin-top:2px; }
+.gbd { width:5px; height:9px; background:#ffdd00; box-shadow:0 0 4px #ffdd00; }
+.gbd.ge { background:#2a2a2a; box-shadow:none; }
+#gspeech {
+  position:absolute; bottom:50px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,.9); border:2px solid var(--purple);
+  box-shadow:0 0 14px var(--purple); padding:8px 14px;
+  color:#fff; font-family:'Creepster',cursive; font-size:15px;
+  max-width:400px; text-align:center; border-radius:4px;
+  pointer-events:none; opacity:0; transition:opacity .3s; z-index:10;
+  white-space:nowrap;
+}
+#gspeech.show { opacity:1; }
+#gspeech::after {
+  content:''; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:var(--purple);
+}
+#gwann {
+  position:absolute; top:38%; left:50%; transform:translate(-50%,-50%);
+  font-family:'Creepster',cursive; font-size:50px; color:#ff2200;
+  text-shadow:0 0 30px #ff2200,0 0 60px #ff220055;
+  pointer-events:none; opacity:0; z-index:15; text-align:center;
+  white-space:nowrap; transition:opacity .4s;
+}
+#gwann.show { opacity:1; }
+#gov {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,.9); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:20; cursor:pointer;
+}
+#gov.hidden { display:none; }
+.go-title {
+  font-family:'Creepster',cursive; font-size:28px; color:#ff2200;
+  text-shadow:0 0 20px #ff2200,3px 3px 0 #600; letter-spacing:3px;
+  animation:gflicker 2.5s infinite; text-align:center; line-height:1.3;
+}
+.go-sub { font-family:'Creepster',cursive; font-size:22px; color:var(--ggreen); text-shadow:0 0 10px var(--ggreen); margin-top:6px; }
+.go-instr { margin-top:18px; color:#999; font-size:6px; font-family:'Press Start 2P',monospace; line-height:2.4; text-align:center; }
+.go-tap { margin-top:20px; color:#fff; font-size:8px; font-family:'Press Start 2P',monospace; animation:gblink .9s infinite; }
+.go-score { color:#ffdd00; font-size:13px; font-family:'Press Start 2P',monospace; text-shadow:0 0 10px #ffdd00; margin-top:10px; }
+.go-detail { color:#aaa; font-size:6px; font-family:'Press Start 2P',monospace; margin-top:8px; }
+@keyframes gflicker { 0%,100%{opacity:1}92%{opacity:1}93%{opacity:.3}95%{opacity:1}97%{opacity:.5}98%{opacity:1} }
+@keyframes gblink { 0%,100%{opacity:1}50%{opacity:0} }
 </style>
 </head>
-
 <body>
 
-<button class="play-btn" onclick="startGame()">PLAY</button>
+<h1 class="neon">Bienvenido a la comunidad de Tighti</h1>
 
-<canvas id="game" width="400" height="600"></canvas>
+<!-- LINKS -->
+<div class="container">
+  <div class="card"><h2>Discord</h2><a href="https://discord.gg/cruqhYg5" target="_blank">Unirse</a></div>
+  <div class="card"><h2>Twitch</h2><a href="https://www.twitch.tv/tighty1" target="_blank">Ver canal</a></div>
+  <div class="card"><h2>TikTok</h2><a href="https://www.tiktok.com/@tighty11" target="_blank">Ver perfil</a></div>
+  <div class="card"><h2>X</h2><a href="https://x.com/Tighty_1" target="_blank">Ver perfil</a></div>
+</div>
 
+<!-- BOTÓN JUGAR CENTRADO -->
+<div id="btn-jugar-wrap">
+  <button id="btn-jugar" onclick="abrirJuego()">☠ JUGAR ☠</button>
+  <div class="btn-sub">Apocalipsis Tighty</div>
+</div>
+
+<!-- MÚSICA -->
+<div class="musica">
+  <button class="music-btn" onclick="toggleMusic()" id="btnMusic">▶</button>
+  <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="volumen(this.value)">
+</div>
+<audio id="bgMusic" loop autoplay>
+  <source src="tighty_cansion.mp3">
+</audio>
+
+<!-- REGLAS -->
+<div class="reglas">
+  <button onclick="toggleReglas()">☰ Reglas</button>
+  <div class="lista" id="lista">
+    <p>✔ No spam</p>
+    <p>✔ Respeto a todos</p>
+    <p>✔ No insultos</p>
+    <p>✔ No contenido +18</p>
+    <p>✔ No links sospechosos</p>
+    <p>✔ Sigue a los admins</p>
+    <p>✔ Diviértete 😎</p>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL JUEGO ═══════════════ -->
+<div id="game-modal">
+  <button id="close-game" onclick="cerrarJuego()">✕ SALIR</button>
+  <div id="game-wrap">
+    <canvas id="gc" width="520" height="600"></canvas>
+    <div id="ghud">
+      <div id="ghud-left">
+        <div class="ghl">❤️ <span id="ghpn">100</span></div>
+        <div class="ghl">💀 <span id="gkilln">0</span></div>
+        <div id="greload-txt">⟳ RECARGANDO...</div>
+        <div id="gammo-bar"></div>
+      </div>
+      <div id="gwave-center">OLEADA <span id="gwaven">1</span></div>
+      <div class="ghl">🏆 <span id="gscoren">0</span></div>
+    </div>
+    <div id="gspeech"></div>
+    <div id="gwann"></div>
+    <div id="gov">
+      <div class="go-title">☠ APOCALIPSIS<br>TIGHTY ☠</div>
+      <div class="go-sub">— Sobrevive la horda —</div>
+      <div class="go-instr">
+        WASD / FLECHAS → MOVER<br>
+        MOUSE → APUNTAR<br>
+        CLICK → DISPARAR (mantén para ráfaga)<br>
+        R → RECARGAR
+      </div>
+      <div class="go-tap">[ CLICK PARA EMPEZAR ]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
 <script>
-let canvas=document.getElementById("game");
-let ctx=canvas.getContext("2d");
-
-let playerImg=new Image();
-playerImg.src="tighty_game.png";
-
-let y=300;
-let velocity=0;
-let gravity=0.5;
-let jump=-8;
-
-let pipes=[];
-let score=0;
-let lives=3;
-let gameRunning=false;
-
-function startGame(){
-    document.querySelector(".play-btn").style.display="none";
-    canvas.style.display="block";
-    gameRunning=true;
-    loop();
+/* ── Música / Reglas ── */
+let music=document.getElementById("bgMusic");
+let btn=document.getElementById("btnMusic");
+music.volume=0.5;
+function toggleMusic(){
+  if(music.paused){music.play();btn.textContent="⏸";}
+  else{music.pause();btn.textContent="▶";}
+}
+function volumen(v){ music.volume=v; }
+function toggleReglas(){
+  let l=document.getElementById("lista");
+  l.style.display=(l.style.display==="block")?"none":"block";
 }
 
-document.addEventListener("keydown",()=>{
-    velocity=jump;
+/* ── Modal ── */
+let gameStarted=false;
+function abrirJuego(){
+  document.getElementById('game-modal').classList.add('show');
+  if(!gameStarted){ initGame(); gameStarted=true; }
+}
+function cerrarJuego(){
+  document.getElementById('game-modal').classList.remove('show');
+}
+
+/* ══════════════════════════════════════
+   JUEGO — APOCALIPSIS TIGHTY
+══════════════════════════════════════ */
+function initGame(){
+const canvas=document.getElementById('gc');
+const ctx=canvas.getContext('2d');
+const W=520,H=600;
+
+const QUOTES=[
+  "¡Señor, dame puntería!","¡Por la santa serpiente morada!","¡Amén... y recarga!",
+  "¡No temo a la muerte, temo quedarme sin balas!","¡Santa Oscuridad, guía mis balas!",
+  "¡Padre nuestro que estás en el cielo... MUERE ZOMBIE!","¡Aleluya! ¡Cabeza volada!",
+  "¡Bendito sea este cargador!","¡El Señor es mi pastor y yo soy el exterminador!",
+  "¡Esto no lo pedí en mis oraciones... o sí!","¡Que Dios se apiade de sus almas podridas!",
+  "¡Una bala por cada pecado!","¡Hoy el apocalipsis me encontró preparado!",
+];
+const BQUOTES=[
+  "¡Dios mío, vienen más!","¡Recarga y ora, soldado!",
+  "¡La horda no descansa!","¡Prepárate para el juicio!","¡Más zombies, más gloria!",
+];
+
+let state='menu',score=0,kills=0,wave=1,fc=0;
+let sT=0,bT=0,wT=0,mDown=false;
+
+const P={
+  x:W/2,y:H/2,vx:0,vy:0,r:13,accel:0.6,friction:0.76,maxSpeed:3.8,
+  angle:0,hp:100,maxHp:100,ammo:15,maxAmmo:15,
+  reloading:false,reloadTimer:0,reloadTime:90,shootCD:0,shootRate:8,invincible:0,
+};
+let zombies=[],bullets=[],parts=[],decals=[];
+const keys={};
+const mouse={x:W/2,y:H/2};
+
+// Input — scoped to canvas/document but only active when modal open
+document.addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='KeyR'&&state==='playing'&&!P.reloading&&P.ammo<P.maxAmmo) reload();
+  if(e.code==='Space') e.preventDefault();
+});
+document.addEventListener('keyup',e=>{keys[e.code]=false;});
+canvas.addEventListener('mousemove',e=>{
+  const r=canvas.getBoundingClientRect();
+  mouse.x=(e.clientX-r.left)*(W/r.width);
+  mouse.y=(e.clientY-r.top)*(H/r.height);
+});
+canvas.addEventListener('mousedown',()=>{mDown=true;if(state==='playing')shoot();});
+canvas.addEventListener('mouseup',()=>{mDown=false;});
+document.getElementById('gov').addEventListener('click',()=>{
+  if(state==='menu'||state==='dead') startGame();
 });
 
-function createPipe(){
-    let gap=150;
-    let top=Math.random()*300;
-
-    pipes.push({
-        x:400,
-        top:top,
-        bottom:top+gap
-    });
+function showSpeech(t){
+  const el=document.getElementById('gspeech');
+  el.textContent='"'+t+'"';el.classList.add('show');sT=200;
+}
+function showWann(t){
+  const el=document.getElementById('gwann');
+  el.textContent=t;el.classList.add('show');wT=130;
+}
+function updateAmmoBar(){
+  const bar=document.getElementById('gammo-bar');bar.innerHTML='';
+  for(let i=0;i<P.maxAmmo;i++){
+    const d=document.createElement('div');
+    d.className='gbd'+(i<P.ammo?'':' ge');bar.appendChild(d);
+  }
+}
+function spawnPart(x,y,col,n=6,sz=3){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,sp=Math.random()*3+1;
+    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,col,sz:sz+Math.random()*2});
+  }
+}
+function spawnBlood(x,y){
+  decals.push({x,y,rx:5+Math.random()*10,ry:3+Math.random()*7,a:.7});
+  spawnPart(x,y,'#aa0000',10,4);
 }
 
-function loop(){
-    if(!gameRunning) return;
+function startGame(){
+  state='playing';score=0;kills=0;wave=1;fc=0;
+  Object.assign(P,{x:W/2,y:H/2,vx:0,vy:0,hp:P.maxHp,ammo:P.maxAmmo,reloading:false,invincible:0,shootCD:0});
+  zombies=[];bullets=[];parts=[];decals=[];
+  document.getElementById('gov').classList.add('hidden');
+  document.getElementById('ghpn').textContent=P.hp;
+  document.getElementById('gkilln').textContent=0;
+  document.getElementById('gscoren').textContent=0;
+  document.getElementById('gwaven').textContent=1;
+  document.getElementById('greload-txt').style.display='none';
+  updateAmmoBar();
+  showWann('☠ OLEADA 1 ☠');
+  spawnWave(1);
+  showSpeech("¡Que empiece el apocalipsis!");
+}
 
-    ctx.clearRect(0,0,400,600);
+function endGame(){
+  state='dead';
+  const ov=document.getElementById('gov');
+  ov.classList.remove('hidden');
+  ov.innerHTML=`
+    <div class="go-title">GAME OVER</div>
+    <div class="go-sub" style="color:#ff4400">☠ TIGHTY CAYÓ ☠</div>
+    <div class="go-score">SCORE: ${score}</div>
+    <div class="go-detail">OLEADA ${wave} &nbsp;|&nbsp; BAJAS: ${kills}</div>
+    <div class="go-tap" style="margin-top:22px">[ CLICK PARA REINTENTAR ]</div>`;
+  ov.addEventListener('click',()=>{if(state==='dead')startGame();},{once:true});
+}
 
-    // jugador
-    velocity+=gravity;
-    y+=velocity;
+function nextWave(){
+  wave++;document.getElementById('gwaven').textContent=wave;
+  state='between';bT=200;
+  showWann('☠ OLEADA '+wave+' ☠');
+  showSpeech(BQUOTES[Math.floor(Math.random()*BQUOTES.length)]);
+}
 
-    ctx.drawImage(playerImg,50,y,50,50);
+function spawnWave(w){
+  const count=Math.min(4+(w-1)*2,22);
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      if(state!=='playing'&&state!=='between') return;
+      const side=Math.floor(Math.random()*4);
+      let x,y;
+      if(side===0){x=Math.random()*W;y=-25;}
+      else if(side===1){x=W+25;y=Math.random()*H;}
+      else if(side===2){x=Math.random()*W;y=H+25;}
+      else{x=-25;y=Math.random()*H;}
+      const big=w>=3&&Math.random()<0.15;
+      zombies.push({
+        x,y,r:big?16:12,
+        hp:big?3+Math.floor(w/2):1+Math.floor(w/4),
+        maxHp:big?3+Math.floor(w/2):1+Math.floor(w/4),
+        speed:(big?0.55:0.75)+w*0.04+Math.random()*0.2,
+        angle:0,wobble:Math.random()*Math.PI*2,big,
+      });
+    },i*350);
+  }
+}
 
-    // tubos
-    for(let i=0;i<pipes.length;i++){
-        let p=pipes[i];
-        p.x-=3;
+function shoot(){
+  if(P.reloading||P.ammo<=0||P.shootCD>0) return;
+  const gd=24;
+  const bx=P.x+Math.cos(P.angle)*gd,by=P.y+Math.sin(P.angle)*gd;
+  bullets.push({x:bx,y:by,vx:Math.cos(P.angle)*13,vy:Math.sin(P.angle)*13,life:60});
+  P.ammo--;P.shootCD=P.shootRate;
+  updateAmmoBar();spawnPart(bx,by,'#ffcc00',3,2);
+  if(P.ammo<=0) reload();
+}
+function reload(){
+  if(P.reloading||P.ammo===P.maxAmmo) return;
+  P.reloading=true;P.reloadTimer=P.reloadTime;
+  document.getElementById('greload-txt').style.display='block';
+  showSpeech("¡Recargando... Dios dame tiempo!");
+}
 
-        ctx.fillStyle="cyan";
-        ctx.fillRect(p.x,0,50,p.top);
-        ctx.fillRect(p.x,p.bottom,50,600);
+function update(){
+  if(state!=='playing') return;
+  fc++;
+  // Solo procesar si el modal está abierto
+  if(!document.getElementById('game-modal').classList.contains('show')) return;
 
-        // colision
-        if(50+50>p.x && 50<p.x+50){
-            if(y<p.top || y+50>p.bottom){
-                loseLife();
-            }
+  P.angle=Math.atan2(mouse.y-P.y,mouse.x-P.x);
+  let ix=0,iy=0;
+  if(keys['KeyW']||keys['ArrowUp'])    iy-=1;
+  if(keys['KeyS']||keys['ArrowDown'])  iy+=1;
+  if(keys['KeyA']||keys['ArrowLeft'])  ix-=1;
+  if(keys['KeyD']||keys['ArrowRight']) ix+=1;
+  if(ix&&iy){ix*=0.707;iy*=0.707;}
+  P.vx=(P.vx+ix*P.accel)*P.friction;
+  P.vy=(P.vy+iy*P.accel)*P.friction;
+  const spd=Math.sqrt(P.vx*P.vx+P.vy*P.vy);
+  if(spd>P.maxSpeed){P.vx=P.vx/spd*P.maxSpeed;P.vy=P.vy/spd*P.maxSpeed;}
+  P.x=Math.max(P.r,Math.min(W-P.r,P.x+P.vx));
+  P.y=Math.max(P.r,Math.min(H-P.r,P.y+P.vy));
+
+  if(mDown&&!P.reloading) shoot();
+  if(P.shootCD>0) P.shootCD--;
+
+  if(P.reloading){
+    P.reloadTimer--;
+    if(P.reloadTimer<=0){
+      P.reloading=false;P.ammo=P.maxAmmo;
+      document.getElementById('greload-txt').style.display='none';
+      updateAmmoBar();showSpeech("¡Recargado! ¡Aleluya!");
+    }
+  }
+  if(P.invincible>0) P.invincible--;
+
+  bullets.forEach(b=>{b.x+=b.vx;b.y+=b.vy;b.life--;});
+  bullets=bullets.filter(b=>b.life>0&&b.x>-20&&b.x<W+20&&b.y>-20&&b.y<H+20);
+
+  for(let zi=zombies.length-1;zi>=0;zi--){
+    const z=zombies[zi];
+    const ddx=P.x-z.x,ddy=P.y-z.y;
+    const dist=Math.sqrt(ddx*ddx+ddy*ddy)||1;
+    z.angle=Math.atan2(ddy,ddx)-Math.PI/2;
+    z.x+=(ddx/dist)*z.speed;z.y+=(ddy/dist)*z.speed;z.wobble+=0.06;
+    if(dist<P.r+z.r&&P.invincible<=0){
+      P.hp=Math.max(0,P.hp-(z.big?12:6));P.invincible=80;
+      document.getElementById('ghpn').textContent=P.hp;
+      spawnPart(P.x,P.y,'#ff0000',12,5);
+      if(P.hp<=0){endGame();return;}
+    }
+  }
+
+  for(let bi=bullets.length-1;bi>=0;bi--){
+    const b=bullets[bi];
+    for(let zi=zombies.length-1;zi>=0;zi--){
+      const z=zombies[zi];
+      const ddx=b.x-z.x,ddy=b.y-z.y;
+      if(ddx*ddx+ddy*ddy<(z.r+4)**2){
+        z.hp--;spawnBlood(z.x+Math.random()*8-4,z.y+Math.random()*8-4);
+        bullets.splice(bi,1);
+        if(z.hp<=0){
+          spawnBlood(z.x,z.y);
+          decals.push({x:z.x,y:z.y,rx:12+Math.random()*8,ry:7+Math.random()*6,a:.75});
+          zombies.splice(zi,1);kills++;score+=10*wave;
+          document.getElementById('gkilln').textContent=kills;
+          document.getElementById('gscoren').textContent=score;
         }
-
-        if(p.x<0){
-            pipes.splice(i,1);
-            score++;
-        }
+        break;
+      }
     }
+  }
 
-    // crear tubos
-    if(Math.random()<0.02){
-        createPipe();
-    }
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.05;p.life-=0.055;});
+  parts=parts.filter(p=>p.life>0);
 
-    // suelo
-    if(y>550){
-        loseLife();
-    }
+  if(sT>0&&--sT===0) document.getElementById('gspeech').classList.remove('show');
+  if(wT>0&&--wT===0) document.getElementById('gwann').classList.remove('show');
 
-    // HUD
-    ctx.fillStyle="white";
-    ctx.font="20px Arial";
-    ctx.fillText("Score: "+score,10,20);
-    ctx.fillText("Vidas: "+lives,10,50);
-
-    requestAnimationFrame(loop);
+  if(zombies.length===0) nextWave();
+  if(state==='playing'&&Math.random()<0.0025)
+    showSpeech(QUOTES[Math.floor(Math.random()*QUOTES.length)]);
 }
 
-function loseLife(){
-    lives--;
-    y=300;
-    velocity=0;
-
-    if(lives<=0){
-        alert("Game Over 😈 Score: "+score);
-        location.reload();
-    }
+function updateBetween(){
+  if(state!=='between') return;
+  if(sT>0&&--sT===0) document.getElementById('gspeech').classList.remove('show');
+  if(wT>0&&--wT===0) document.getElementById('gwann').classList.remove('show');
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life-=0.05;});
+  parts=parts.filter(p=>p.life>0);
+  if(--bT<=0){state='playing';spawnWave(wave);}
 }
+
+function drawFloor(){
+  const T=40;
+  for(let ty=0;ty<Math.ceil(H/T)+1;ty++)
+    for(let tx=0;tx<Math.ceil(W/T)+1;tx++){
+      ctx.fillStyle=(tx+ty)%2===0?'#0c1809':'#0a1507';ctx.fillRect(tx*T,ty*T,T,T);
+    }
+  ctx.strokeStyle='rgba(40,70,20,.2)';ctx.lineWidth=1;
+  for(let tx=0;tx<=W;tx+=T){ctx.beginPath();ctx.moveTo(tx,0);ctx.lineTo(tx,H);ctx.stroke();}
+  for(let ty=0;ty<=H;ty+=T){ctx.beginPath();ctx.moveTo(0,ty);ctx.lineTo(W,ty);ctx.stroke();}
+}
+function drawDecals(){
+  decals.forEach(d=>{
+    ctx.globalAlpha=d.a*.5;ctx.fillStyle='#550000';
+    ctx.beginPath();ctx.ellipse(d.x,d.y,d.rx,d.ry,0,0,Math.PI*2);ctx.fill();
+  });ctx.globalAlpha=1;
+}
+function drawZombie(z){
+  const s=z.big?1.35:1;
+  ctx.save();ctx.translate(Math.round(z.x),Math.round(z.y));ctx.rotate(z.angle);
+  ctx.globalAlpha=.3;ctx.fillStyle='#000';
+  ctx.beginPath();ctx.ellipse(0,6*s,10*s,4*s,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle=z.big?'#1e3a12':'#2e4a1e';ctx.fillRect(-7*s,-10*s,14*s,17*s);
+  ctx.fillStyle='#162a0e';ctx.fillRect(-5*s,-4*s,3*s,2*s);ctx.fillRect(2*s,-2*s,3*s,2*s);
+  ctx.fillStyle='#3a5428';ctx.fillRect(-6*s,-19*s,12*s,11*s);
+  ctx.fillStyle='#0a0500';ctx.fillRect(-4*s,-16*s,3*s,3*s);ctx.fillRect(1*s,-16*s,3*s,3*s);
+  ctx.fillStyle='#ff0000';ctx.fillRect(-3*s,-16*s,2*s,2*s);ctx.fillRect(2*s,-16*s,2*s,2*s);
+  ctx.fillStyle='#0a0500';ctx.fillRect(-3*s,-11*s,6*s,3*s);
+  ctx.fillStyle='#990000';ctx.fillRect(-2*s,-11*s,4*s,2*s);
+  const wo=Math.sin(z.wobble+fc*.14)*3;
+  ctx.fillStyle='#2e4a1e';
+  ctx.fillRect(-13*s,(-9+wo)*s,6*s,4*s);ctx.fillRect(7*s,(-9-wo)*s,6*s,4*s);
+  ctx.fillStyle='#3a5428';
+  ctx.fillRect(-13*s,(-5+wo)*s,6*s,3*s);ctx.fillRect(7*s,(-5-wo)*s,6*s,3*s);
+  ctx.fillStyle='#1e2e10';ctx.fillRect(-6*s,7*s,5*s,9*s);ctx.fillRect(1*s,7*s,5*s,9*s);
+  if(z.hp<z.maxHp&&z.maxHp>1){
+    const bw=22*s;ctx.fillStyle='#222';ctx.fillRect(-bw/2,-25*s,bw,3*s);
+    ctx.fillStyle='#00ff44';ctx.fillRect(-bw/2,-25*s,bw*(z.hp/z.maxHp),3*s);
+  }
+  ctx.restore();
+}
+function drawPlayer(){
+  if(P.invincible>0&&Math.floor(fc/4)%2===0) return;
+  ctx.save();ctx.translate(Math.round(P.x),Math.round(P.y));ctx.rotate(P.angle+Math.PI/2);
+  ctx.globalAlpha=.3;ctx.fillStyle='#000';
+  ctx.beginPath();ctx.ellipse(0,8,13,5,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#111';ctx.fillRect(-8,-10,16,20);
+  ctx.fillStyle='#111';ctx.beginPath();ctx.arc(0,-8,10,0,Math.PI*2);ctx.fill();
+  ctx.fillRect(-13,-19,7,7);ctx.fillRect(6,-19,7,7);
+  ctx.fillStyle='#2a2a2a';ctx.fillRect(-11,-17,4,4);ctx.fillRect(7,-17,4,4);
+  ctx.fillStyle='#c4826a';ctx.beginPath();ctx.arc(0,-8,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#777';ctx.fillRect(-6,-11,12,3);
+  ctx.fillStyle='#bbb';ctx.fillRect(-1,-12,2,3);
+  ctx.fillStyle='#cc1111';ctx.fillRect(-4,-11,2,2);ctx.fillRect(2,-11,2,2);
+  ctx.fillStyle='#6622bb';
+  ctx.beginPath();ctx.ellipse(-7,1,4,3,.3,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(7,-1,4,3,-.3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#7b2fff';ctx.fillRect(-5,-2,10,5);
+  ctx.fillStyle='#555';ctx.fillRect(-2,-24,4,14);
+  ctx.fillStyle='#333';ctx.fillRect(-3,-10,6,6);
+  ctx.fillStyle='#666';ctx.fillRect(-1,-28,2,6);
+  ctx.restore();
+  ctx.save();ctx.globalAlpha=0.15;ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.setLineDash([4,10]);
+  ctx.beginPath();
+  ctx.moveTo(P.x+Math.cos(P.angle)*26,P.y+Math.sin(P.angle)*26);
+  ctx.lineTo(P.x+Math.cos(P.angle)*100,P.y+Math.sin(P.angle)*100);
+  ctx.stroke();ctx.setLineDash([]);ctx.restore();
+}
+function drawBullets(){
+  bullets.forEach(b=>{
+    ctx.save();ctx.shadowColor='#ffcc00';ctx.shadowBlur=8;ctx.fillStyle='#ffee44';
+    ctx.beginPath();ctx.arc(b.x,b.y,3.5,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;ctx.restore();
+  });
+}
+function drawParticles(){
+  parts.forEach(p=>{
+    ctx.globalAlpha=p.life;ctx.fillStyle=p.col;
+    ctx.fillRect(p.x-p.sz/2,p.y-p.sz/2,p.sz,p.sz);
+  });ctx.globalAlpha=1;
+}
+function drawHPBar(){
+  const bw=120,bh=10,bx=12,by=H-20;
+  ctx.fillStyle='#1a0000';ctx.fillRect(bx,by,bw,bh);
+  const ratio=P.hp/P.maxHp;
+  ctx.fillStyle=ratio>.6?'#00cc44':ratio>.3?'#ff8800':'#ff2200';
+  ctx.fillRect(bx,by,bw*ratio,bh);
+  ctx.strokeStyle='#444';ctx.lineWidth=1;ctx.strokeRect(bx,by,bw,bh);
+}
+function render(){
+  ctx.clearRect(0,0,W,H);
+  drawFloor();drawDecals();zombies.forEach(drawZombie);
+  drawBullets();drawParticles();drawPlayer();drawHPBar();
+  if(state==='between'){
+    ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#ffcc00';ctx.font='8px "Press Start 2P"';
+    ctx.textAlign='center';
+    ctx.fillText('PRÓXIMA OLEADA EN '+Math.ceil(bT/60)+'...',W/2,H/2+60);
+    ctx.textAlign='left';
+  }
+}
+
+function loop(){ update();updateBetween();render();requestAnimationFrame(loop); }
+updateAmmoBar();
+loop();
+} // end initGame
 </script>
-
 </body>
 </html>
