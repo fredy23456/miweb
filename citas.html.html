@@ -1,0 +1,501 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+#game{background:#000;min-height:640px;display:flex;flex-direction:column;align-items:center;font-family:'Press Start 2P',monospace;color:#fff;padding:16px;position:relative;overflow:hidden;image-rendering:pixelated}
+#scanlines{pointer-events:none;position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.07) 0px,rgba(0,0,0,0.07) 1px,transparent 1px,transparent 2px);z-index:999}
+#screen{width:100%;max-width:660px;position:relative}
+#top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border:1.5px solid #222;padding:6px 10px}
+#top-bar .lbl{font-size:6px;color:#555}
+#hp-bar{flex:1;margin:0 10px;height:7px;background:#111;border:1px solid #333}
+#hp-fill{height:100%;background:linear-gradient(90deg,#7b0066,#ff44cc);transition:width 0.4s}
+#affection-num{font-size:7px;color:#ff44cc;min-width:60px;text-align:right}
+#stage{display:flex;justify-content:center;align-items:flex-end;min-height:280px;position:relative;margin-bottom:0;background:radial-gradient(ellipse at 50% 100%, #0d0010 0%, #000 70%)}
+#haunter-wrap{position:absolute;right:10px;bottom:30px;animation:hfloat 2.2s ease-in-out infinite}
+@keyframes hfloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+#tighty-wrap{position:relative;animation:tidle 1.8s ease-in-out infinite}
+@keyframes tidle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.shake{animation:shk 0.3s !important}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.bounce{animation:bnc 0.4s !important}
+@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+#dialog-box{border:3px solid #fff;background:#000;padding:14px 18px 24px;position:relative;min-height:88px;width:100%;margin-top:0}
+#dialog-box::after{content:'▼';position:absolute;bottom:6px;right:12px;font-size:8px;color:#fff;animation:blink 0.8s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+#dname{font-size:8px;color:#ff44cc;margin-bottom:7px;letter-spacing:2px;text-shadow:0 0 6px #ff44cc88}
+#dtext{font-size:8px;line-height:1.9;color:#fff;min-height:48px;white-space:pre-wrap}
+#opts{width:100%;max-width:660px;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
+.opt{background:#000;border:1.5px solid #333;color:#ccc;font-family:'Press Start 2P',monospace;font-size:6px;padding:9px 11px;text-align:left;cursor:pointer;transition:all 0.12s;line-height:1.8;position:relative}
+.opt::before{content:'* ';color:#ff44cc}
+.opt:hover{border-color:#ff44cc;color:#fff;background:#100010;transform:translateX(2px)}
+.opt:active{transform:scale(0.97)}
+#hearts-row{display:flex;gap:3px;justify-content:center;margin:6px 0 4px;font-size:11px}
+.hrt{color:#333;transition:all 0.3s}
+.hrt.on{color:#ff44cc;text-shadow:0 0 4px #ff44cc}
+#q-label{font-size:6px;color:#444;text-align:center;margin-bottom:5px;letter-spacing:1px}
+#end{display:none;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:24px 10px;min-height:400px;justify-content:center}
+#end-title{font-size:11px;line-height:1.8;animation:glow 1.4s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 6px currentColor}50%{text-shadow:0 0 18px currentColor,0 0 30px currentColor}}
+#end-msg{font-size:6.5px;color:#bbb;line-height:2.2;max-width:420px;white-space:pre-wrap}
+#end-score{font-size:8px;margin-top:4px}
+#rbtn{background:#000;border:2px solid #ff44cc;color:#ff44cc;font-family:'Press Start 2P',monospace;font-size:7px;padding:12px 20px;cursor:pointer;margin-top:8px;transition:all 0.15s}
+#rbtn:hover{background:#ff44cc;color:#000}
+#reaction-tag{font-size:7px;padding:4px 10px;border:1px solid;margin-bottom:6px;display:none;align-self:flex-start;margin-left:0}
+.rtg-good{color:#44ffaa;border-color:#44ffaa}
+.rtg-mid{color:#ffcc44;border-color:#ffcc44}
+.rtg-bad{color:#ff4444;border-color:#ff4444}
+#skip-hint{position:absolute;bottom:7px;left:12px;font-size:5px;color:#333;cursor:pointer;background:none;border:none;font-family:'Press Start 2P',monospace}
+#skip-hint:hover{color:#777}
+</style>
+
+<div id="scanlines"></div>
+<div id="game">
+  <div id="screen">
+
+    <div id="top-bar">
+      <span class="lbl">AFECTO</span>
+      <div id="hp-bar"><div id="hp-fill" style="width:0%"></div></div>
+      <span id="affection-num">0 / 144</span>
+    </div>
+
+    <div id="hearts-row"></div>
+    <div id="q-label">PREGUNTA 0 / 12</div>
+
+    <div id="stage">
+      <!-- HAUNTER pixel art SVG -->
+      <div id="haunter-wrap">
+        <svg width="100" height="105" viewBox="0 0 50 52" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+          <!-- body -->
+          <rect x="10" y="8" width="30" height="26" fill="#7244aa"/>
+          <rect x="8"  y="12" width="2"  height="18" fill="#7244aa"/>
+          <rect x="40" y="12" width="2"  height="18" fill="#7244aa"/>
+          <!-- jagged bottom -->
+          <rect x="10" y="34" width="5"  height="6" fill="#7244aa"/>
+          <rect x="17" y="36" width="4"  height="4" fill="#7244aa"/>
+          <rect x="23" y="34" width="5"  height="6" fill="#7244aa"/>
+          <rect x="30" y="36" width="4"  height="4" fill="#7244aa"/>
+          <rect x="36" y="34" width="4"  height="6" fill="#7244aa"/>
+          <!-- tail -->
+          <rect x="18" y="40" width="4"  height="8" fill="#7244aa"/>
+          <rect x="20" y="46" width="6"  height="4" fill="#7244aa"/>
+          <!-- spikes top -->
+          <rect x="4"  y="4"  width="6"  height="10" fill="#5a3388"/>
+          <rect x="40" y="2"  width="6"  height="12" fill="#5a3388"/>
+          <rect x="22" y="2"  width="6"  height="8"  fill="#5a3388"/>
+          <!-- eyes white -->
+          <rect x="13" y="14" width="9"  height="10" fill="#eee"/>
+          <rect x="28" y="14" width="9"  height="10" fill="#eee"/>
+          <!-- pupils -->
+          <rect x="15" y="16" width="5"  height="7"  fill="#1a003a"/>
+          <rect x="30" y="16" width="5"  height="7"  fill="#1a003a"/>
+          <!-- eye shine -->
+          <rect x="15" y="16" width="2"  height="2"  fill="#fff"/>
+          <rect x="30" y="16" width="2"  height="2"  fill="#fff"/>
+          <!-- mouth -->
+          <rect x="12" y="27" width="26" height="4"  fill="#ff4488"/>
+          <!-- teeth -->
+          <rect x="14" y="28" width="3"  height="3"  fill="#fff"/>
+          <rect x="19" y="28" width="3"  height="3"  fill="#fff"/>
+          <rect x="25" y="28" width="3"  height="3"  fill="#fff"/>
+          <rect x="31" y="28" width="3"  height="3"  fill="#fff"/>
+          <!-- hands/arms -->
+          <rect x="2"  y="22" width="6"  height="8"  fill="#7244aa"/>
+          <rect x="42" y="22" width="6"  height="8"  fill="#7244aa"/>
+          <rect x="0"  y="24" width="4"  height="4"  fill="#7244aa"/>
+          <rect x="46" y="24" width="4"  height="4"  fill="#7244aa"/>
+        </svg>
+      </div>
+
+      <!-- TIGHTY pixel art SVG — hoodie negro, orejas cat, pelo negro, ojos rojos, headband ninja, haunter arm wrap -->
+      <div id="tighty-wrap">
+        <svg width="150" height="230" viewBox="0 0 75 115" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+          <!-- SHADOW -->
+          <ellipse cx="37" cy="112" rx="22" ry="5" fill="#1a0020" opacity="0.7"/>
+
+          <!-- LEGS / PANTS negros -->
+          <rect x="22" y="86" width="13" height="24" fill="#111"/>
+          <rect x="40" y="86" width="13" height="24" fill="#111"/>
+          <!-- boots -->
+          <rect x="20" y="105" width="15" height="8" fill="#0a0a0a"/>
+          <rect x="39" y="105" width="15" height="8" fill="#0a0a0a"/>
+          <rect x="19" y="109" width="17" height="4" fill="#222"/>
+          <rect x="38" y="109" width="17" height="4" fill="#222"/>
+
+          <!-- BODY hoodie negro -->
+          <rect x="18" y="52" width="39" height="38" fill="#1a1a1a"/>
+          <!-- hoodie pocket -->
+          <rect x="27" y="72" width="21" height="12" fill="#111"/>
+          <rect x="28" y="73" width="19" height="10" fill="#161616"/>
+          <!-- hoodie zipper -->
+          <rect x="36" y="53" width="3" height="34" fill="#0a0a0a"/>
+          <rect x="37" y="55" width="1" height="30" fill="#333"/>
+          <!-- zipper pull -->
+          <rect x="35" y="68" width="5" height="3" fill="#555"/>
+          <!-- hoodie texture folds -->
+          <rect x="20" y="58" width="2" height="20" fill="#222"/>
+          <rect x="53" y="58" width="2" height="20" fill="#222"/>
+
+          <!-- PURPLE HAUNTER ARM wrapping from right — left arm of haunter around tighty -->
+          <!-- arm coming from right side -->
+          <rect x="52" y="56" width="8"  height="6" fill="#7244aa"/>
+          <rect x="56" y="58" width="12" height="5" fill="#7244aa"/>
+          <rect x="60" y="54" width="8"  height="6" fill="#7244aa"/>
+          <rect x="63" y="50" width="6"  height="6" fill="#7244aa"/>
+          <!-- small haunter face peeking at chest -->
+          <rect x="42" y="60" width="12" height="10" fill="#7244aa"/>
+          <rect x="43" y="61" width="4"  height="4"  fill="#1a003a"/>
+          <rect x="44" y="62" width="2"  height="2"  fill="#fff"/>
+          <rect x="49" y="61" width="4"  height="4"  fill="#1a003a"/>
+          <rect x="50" y="62" width="2"  height="2"  fill="#fff"/>
+          <rect x="44" y="67" width="8"  height="2"  fill="#ff4488"/>
+
+          <!-- ARMS body -->
+          <rect x="8"  y="54" width="12" height="32" fill="#1a1a1a"/>
+          <rect x="55" y="54" width="12" height="28" fill="#1a1a1a"/>
+          <!-- hands/fingers -->
+          <rect x="7"  y="82" width="14" height="8"  fill="#e8c49a"/>
+          <rect x="6"  y="80" width="4"  height="6"  fill="#e8c49a"/>
+          <rect x="54" y="80" width="14" height="8"  fill="#e8c49a"/>
+          <rect x="65" y="78" width="4"  height="6"  fill="#e8c49a"/>
+
+          <!-- NECK -->
+          <rect x="32" y="46" width="11" height="8" fill="#e8c49a"/>
+
+          <!-- HEAD base skin -->
+          <rect x="22" y="18" width="31" height="30" fill="#e8c49a"/>
+          <!-- cheeks blush subtle -->
+          <rect x="22" y="33" width="5" height="3" fill="#e8a09a" opacity="0.5"/>
+          <rect x="48" y="33" width="5" height="3" fill="#e8a09a" opacity="0.5"/>
+          <!-- MOUTH / expression -->
+          <rect x="31" y="40" width="13" height="2" fill="#b07060"/>
+          <rect x="33" y="38" width="9"  height="2" fill="#b07060"/>
+
+          <!-- HAIR black long — sides -->
+          <rect x="16" y="16" width="8"  height="42" fill="#111"/>
+          <rect x="51" y="16" width="8"  height="42" fill="#111"/>
+          <!-- hair top/back -->
+          <rect x="18" y="10" width="39" height="20" fill="#0d0d0d"/>
+          <!-- hair strands front -->
+          <rect x="22" y="18" width="5"  height="16" fill="#111"/>
+          <rect x="28" y="18" width="4"  height="10" fill="#0d0d0d"/>
+          <rect x="44" y="18" width="5"  height="14" fill="#111"/>
+          <rect x="40" y="18" width="4"  height="8"  fill="#0d0d0d"/>
+
+          <!-- CAT EARS black -->
+          <rect x="18" y="4"  width="10" height="14" fill="#0d0d0d"/>
+          <rect x="47" y="2"  width="10" height="14" fill="#0d0d0d"/>
+          <!-- inner ear purple -->
+          <rect x="20" y="6"  width="6"  height="9"  fill="#3d1155"/>
+          <rect x="49" y="4"  width="6"  height="9"  fill="#3d1155"/>
+          <!-- ear tips -->
+          <rect x="17" y="2"  width="4"  height="4"  fill="#0a0a0a"/>
+          <rect x="54" y="0"  width="4"  height="4"  fill="#0a0a0a"/>
+
+          <!-- HOODIE hood over back of head -->
+          <rect x="16" y="14" width="43" height="10" fill="#1a1a1a"/>
+          <rect x="17" y="22" width="6"  height="18" fill="#1a1a1a"/>
+          <rect x="52" y="22" width="6"  height="18" fill="#1a1a1a"/>
+
+          <!-- HEADBAND / ninja forehead protector -->
+          <rect x="22" y="21" width="31" height="7" fill="#888"/>
+          <rect x="23" y="22" width="29" height="5" fill="#aaa"/>
+          <!-- emblem on headband -->
+          <rect x="33" y="22" width="9"  height="5" fill="#ccc"/>
+          <rect x="35" y="23" width="5"  height="3" fill="#888"/>
+          <rect x="36" y="23" width="1"  height="3" fill="#555"/>
+          <rect x="38" y="23" width="1"  height="3" fill="#555"/>
+
+          <!-- RED EYES glowing -->
+          <rect x="25" y="28" width="10" height="8" fill="#cc0000"/>
+          <rect x="40" y="28" width="10" height="8" fill="#cc0000"/>
+          <!-- eye pupils dark -->
+          <rect x="27" y="29" width="6"  height="6" fill="#660000"/>
+          <rect x="42" y="29" width="6"  height="6" fill="#660000"/>
+          <!-- eye glow shine -->
+          <rect x="25" y="28" width="3"  height="2" fill="#ff4444"/>
+          <rect x="40" y="28" width="3"  height="2" fill="#ff4444"/>
+          <!-- red eye outline glow -->
+          <rect x="24" y="27" width="12" height="10" fill="none" stroke="#ff0000" stroke-width="0.5" opacity="0.6"/>
+          <rect x="39" y="27" width="12" height="10" fill="none" stroke="#ff0000" stroke-width="0.5" opacity="0.6"/>
+        </svg>
+      </div>
+    </div>
+
+    <div id="dialog-box">
+      <div id="dname">TIGHTY</div>
+      <div id="dtext"></div>
+      <button id="skip-hint" onclick="doSkip()">▶ skip</button>
+    </div>
+
+    <div id="opts"></div>
+
+    <div id="end">
+      <div id="end-title"></div>
+      <div id="end-msg"></div>
+      <div id="end-score"></div>
+      <button id="rbtn" onclick="restart()">* VOLVER A INTENTARLO</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const AC = window.AudioContext || window.webkitAudioContext;
+let ac = null;
+let skipping = false, isTyping = false, tiv = null;
+
+function initAC(){if(!ac)ac=new AC();}
+
+function playMsg(){
+  if(!ac)return;
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.connect(g);g.connect(ac.destination);
+  o.type='square';
+  const f=380+Math.random()*160;
+  o.frequency.setValueAtTime(f,ac.currentTime);
+  o.frequency.exponentialRampToValueAtTime(f*0.85,ac.currentTime+0.05);
+  g.gain.setValueAtTime(0.035,ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.07);
+  o.start(ac.currentTime);o.stop(ac.currentTime+0.07);
+}
+
+function playGood(){
+  if(!ac)return;
+  [523,659,784,1047].forEach((f,i)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type='square';o.frequency.value=f;
+    const t=ac.currentTime+i*0.1;
+    g.gain.setValueAtTime(0.04,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+    o.start(t);o.stop(t+0.14);
+  });
+}
+
+function playBad(){
+  if(!ac)return;
+  [280,220,180].forEach((f,i)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type='sawtooth';o.frequency.value=f;
+    const t=ac.currentTime+i*0.11;
+    g.gain.setValueAtTime(0.04,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.13);
+    o.start(t);o.stop(t+0.13);
+  });
+}
+
+function playMid(){
+  if(!ac)return;
+  [400,500].forEach((f,i)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type='triangle';o.frequency.value=f;
+    const t=ac.currentTime+i*0.12;
+    g.gain.setValueAtTime(0.035,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+    o.start(t);o.stop(t+0.15);
+  });
+}
+
+const Qs=[
+  {d:"...\n¿Por qué me miras así?\nEstaba ocupado.",
+   o:[{t:"Te estaba observando. Tienes algo diferente.",p:13},
+      {t:"Perdón, no quise interrumpir.",p:5},
+      {t:"¿Qué hacías exactamente?",p:7},
+      {t:"Haunter me dijo que era buena idea venir.",p:9}]},
+  {d:"Las orejas.\nSí. Son reales.\nNo necesito que me lo preguntes.",
+   o:[{t:"Las encontré perfectas antes de que lo dijeras.",p:13},
+      {t:"¿Puedo... tocarlas? Solo curiosidad.",p:10},
+      {t:"Okay. No dije nada.",p:4},
+      {t:"Son las mejores orejas que he visto.",p:11}]},
+  {d:"¿Te molesta que Haunter\nsiempre esté por aquí?\nÉl no se va a ir.",
+   o:[{t:"No. Ya le tomé cariño. Forma parte del trato.",p:13},
+      {t:"Un poco, pero lo respeto si tú lo quieres.",p:9},
+      {t:"La verdad sí me intimida un poco.",p:5},
+      {t:"Haunter y yo ya hicimos las paces.",p:11}]},
+  {d:"¿Qué ves cuando\nte miro directo\na los ojos?",
+   o:[{t:"Algo que quiero entender mejor.",p:13},
+      {t:"Rojo. Intenso. No aparto la vista.",p:12},
+      {t:"Honestamente... me dan un poco de miedo.",p:4},
+      {t:"Veo que hay mucho detrás de eso.",p:10}]},
+  {d:"No soy de hablar mucho.\nEl silencio me parece\nmás honesto que la mayoría.",
+   o:[{t:"Estoy de acuerdo. A veces el silencio dice todo.",p:13},
+      {t:"Entonces hablaré yo cuando sea necesario.",p:11},
+      {t:"Entiendo, pero a veces las palabras importan.",p:7},
+      {t:"Puedo aprender a estar callado contigo.",p:12}]},
+  {d:"¿Cuál es tu lugar\nfavorito para estar\nen este momento?",
+   o:[{t:"Aquí. Ahora mismo. Contigo.",p:13},
+      {t:"Algún lugar oscuro y tranquilo.",p:10},
+      {t:"Mi cuarto con música.",p:6},
+      {t:"Donde nadie me moleste. Como tú ahora.",p:8}]},
+  {d:"A veces desaparezco\nsin decir nada.\nNo es personal.",
+   o:[{t:"Estará bien. Te espero.",p:13},
+      {t:"¿Puedo al menos saber si estás bien?",p:9},
+      {t:"Eso me costaría mucho...",p:3},
+      {t:"Yo también desaparezco. Nos entendemos.",p:12}]},
+  {d:"Tengo el headband\nde alguien que ya\nno está. No preguntés.",
+   o:[{t:"No pregunto. Solo lo respeto.",p:13},
+      {t:"Entiendo. A veces las cosas no necesitan explicación.",p:11},
+      {t:"¿Fue importante para ti?",p:7},
+      {t:"Está bien. Cada quien guarda lo que necesita.",p:10}]},
+  {d:"¿Qué harías si\nte aburres?\nSer honesto.",
+   o:[{t:"Buscarte para hacer nada juntos.",p:13},
+      {t:"Escuchar música o dibujar.",p:8},
+      {t:"Salir a caminar solo.",p:6},
+      {t:"Quedarme quieto. El aburrimiento tiene fondo.",p:10}]},
+  {d:"¿Me dirías algo\nfeo si te lo pido?\nNecesito saber si eres honesto.",
+   o:[{t:"Tienes cara de que no duermes bien. ¿Estás bien?",p:12},
+      {t:"A veces pareces muy lejano. Pero no en mal sentido.",p:11},
+      {t:"No. No soy cruel aunque me lo pidas.",p:9},
+      {t:"Tus modales necesitan trabajo. Pero me gustan así.",p:13}]},
+  {d:"Si fuera un Pokémon...\n¿con cuál me compararías?\nPiénsalo.",
+   o:[{t:"Gengar. Sin dudarlo.",p:13},
+      {t:"Umbreon. Oscuro pero leal.",p:12},
+      {t:"Absol. Mal entendido.",p:11},
+      {t:"Haunter. Por razones obvias.",p:9}]},
+  {d:"Última pregunta.\nEs la que más pesa.\n¿Por qué debería\nconfiar en ti?",
+   o:[{t:"Porque no vine a cambiarte. Vine a conocerte.",p:15},
+      {t:"Porque Haunter me aprueba. Y él sabe.",p:12},
+      {t:"No tienes que hacerlo. Solo dame tiempo.",p:14},
+      {t:"Porque ya lo estás haciendo. Al escucharme.",p:13}]}
+];
+
+const ENDS=[
+  {min:110,title:"* TIGHTY TE ELIGIÓ",col:"#ff44cc",
+   msg:"Tighty se queda en silencio largo tiempo.\nLuego, muy despacio, hace algo\nque casi nadie ha visto.\n\nSonríe.\n\nHaunter explota de felicidad atrás.\n\n'...Está bien. Quédate.'"},
+  {min:75,title:"* POTENCIAL DETECTADO",col:"#aa66ff",
+   msg:"Tighty te mira de reojo.\n'No eres lo que esperaba.\nEso es raro. Pero no está mal.'\n\nHaunter asiente lentamente.\nHay una puerta entreabierta."},
+  {min:40,title:"* INDIFERENCIA CALCULADA",col:"#5588aa",
+   msg:"Tighty suspira.\n'Hay cosas que no encajan todavía.'\n\nNo es un no definitivo.\nPero tampoco es un sí.\nQuizás la próxima vez."},
+  {min:0,title:"* RECHAZADO EN SILENCIO",col:"#444",
+   msg:"Tighty se da vuelta sin decir nada.\nHaunter niega con la cabeza.\n\nNadie habla del incidente."}
+];
+
+let aff=0, qi=0;
+
+function hearts(){
+  const h=document.getElementById('hearts-row');
+  const filled=Math.min(12,Math.floor((aff/144)*12));
+  h.innerHTML='';
+  for(let i=0;i<12;i++){
+    const s=document.createElement('span');
+    s.className='hrt'+(i<filled?' on':'');
+    s.textContent='♥';
+    h.appendChild(s);
+  }
+}
+
+function ui(){
+  document.getElementById('hp-fill').style.width=Math.min(100,(aff/144)*100)+'%';
+  document.getElementById('affection-num').textContent=aff+' / 144';
+  document.getElementById('q-label').textContent='PREGUNTA '+qi+' / '+Qs.length;
+  hearts();
+}
+
+function type(txt,cb){
+  const el=document.getElementById('dtext');
+  el.textContent='';
+  isTyping=true; skipping=false;
+  let i=0,last=0;
+  clearInterval(tiv);
+  tiv=setInterval(()=>{
+    if(skipping){clearInterval(tiv);el.textContent=txt;isTyping=false;skipping=false;if(cb)cb();return;}
+    if(i<txt.length){
+      el.textContent+=txt[i];
+      const now=Date.now();
+      if(txt[i]!='\n'&&txt[i]!=' '&&now-last>45){playMsg();last=now;}
+      i++;
+    }else{clearInterval(tiv);isTyping=false;if(cb)cb();}
+  },42);
+}
+
+function doSkip(){if(isTyping)skipping=true;}
+
+function anim(id,cls){
+  const el=document.getElementById(id);
+  el.classList.remove('shake','bounce');
+  void el.offsetWidth;
+  el.classList.add(cls);
+  setTimeout(()=>el.classList.remove(cls),400);
+}
+
+function showOpts(){
+  const q=Qs[qi];
+  const a=document.getElementById('opts');
+  a.innerHTML='';
+  q.o.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.textContent=opt.t;
+    b.onclick=()=>pick(i);
+    a.appendChild(b);
+  });
+}
+
+function pick(i){
+  initAC();
+  const q=Qs[qi];
+  const pts=q.o[i].p;
+  aff+=pts; qi++;
+  document.getElementById('opts').innerHTML='';
+  ui();
+  let reaction,rtgCls;
+  if(pts>=12){playGood();reaction=["...*suspiro suave*","Bien dicho.","Eso... estuvo bien.","Hmm. Interesante."][Math.floor(Math.random()*4)];rtgCls='rtg-good';anim('tighty-wrap','bounce');}
+  else if(pts>=7){playMid();reaction=["...","Ya veo.","Está bien.","Continúa."][Math.floor(Math.random()*4)];rtgCls='rtg-mid';}
+  else{playBad();reaction=["...","Esperaba más.","Mmm.","...sí."][Math.floor(Math.random()*4)];rtgCls='rtg-bad';anim('tighty-wrap','shake');}
+
+  type(reaction,()=>{
+    setTimeout(()=>{
+      if(qi>=Qs.length)ending();
+      else{type(Qs[qi].d,showOpts);}
+    },650);
+  });
+}
+
+function ending(){
+  document.getElementById('opts').innerHTML='';
+  document.getElementById('dialog-box').style.display='none';
+  document.getElementById('stage').style.display='none';
+  document.getElementById('hearts-row').style.display='none';
+  document.getElementById('q-label').style.display='none';
+  document.getElementById('top-bar').style.display='none';
+
+  const e=ENDS.find(x=>aff>=x.min)||ENDS[ENDS.length-1];
+  const es=document.getElementById('end');
+  es.style.display='flex';
+  document.getElementById('end-title').textContent=e.title;
+  document.getElementById('end-title').style.color=e.col;
+
+  const stars=aff>=110?'★★★★★':aff>=75?'★★★★☆':aff>=40?'★★★☆☆':'★☆☆☆☆';
+  document.getElementById('end-score').textContent='AFECTO FINAL: '+aff+' / 144   '+stars;
+  document.getElementById('end-score').style.color=e.col;
+
+  if(aff>=110)playGood(); else if(aff>=75)playMid(); else playBad();
+
+  let i=0;const txt=e.msg,el=document.getElementById('end-msg');
+  el.textContent='';
+  const iv=setInterval(()=>{
+    if(i<txt.length){el.textContent+=txt[i];if(txt[i]!='\n'&&txt[i]!=' ')playMsg();i++;}
+    else clearInterval(iv);
+  },40);
+}
+
+function restart(){
+  aff=0;qi=0;
+  document.getElementById('dialog-box').style.display='block';
+  document.getElementById('stage').style.display='flex';
+  document.getElementById('hearts-row').style.display='flex';
+  document.getElementById('q-label').style.display='block';
+  document.getElementById('top-bar').style.display='flex';
+  document.getElementById('end').style.display='none';
+  ui();
+  type(Qs[0].d,showOpts);
+}
+
+document.getElementById('game').addEventListener('click',initAC,{once:true});
+ui();
+type("...\n¿Por qué viniste?\nHaunter dijo que eras diferente.\nEso no significa mucho viniendo de él.",()=>{
+  setTimeout(()=>type(Qs[0].d,showOpts),800);
+});
+</script>
