@@ -166,10 +166,8 @@ body::before{
 
 <h1 class="neon">Bienvenido a la comunidad de Tighti</h1>
 
-<!-- FONDO OSCURO -->
 <div id="fondo" class="fondo"></div>
 
-<!-- BOTON PLAY -->
 <button class="play-btn" onclick="mostrarMenu()">▶ PLAY</button>
 
 <!-- MENU -->
@@ -180,13 +178,15 @@ body::before{
     <button onclick="abrirJuego('juego.html')">☠ TIGHTY APOCALIPSIS</button>
     <button onclick="abrirJuego('citas.html')">💖 TIGHTY DATING</button>
 
+    <!-- 🤖 IA REAL -->
+    <button onclick="abrirLink()">🤖 IA DE TIGHTY</button>
+
     <br><br>
     <button onclick="cerrarMenu()">❌ Cerrar</button>
 </div>
 
 <!-- LINKS -->
 <div class="container">
-
     <div class="card">
         <h2>Discord</h2>
         <a href="https://discord.gg/cruqhYg5">Unirse</a>
@@ -206,7 +206,6 @@ body::before{
         <h2>X</h2>
         <a href="https://x.com/Tighty_1">Ver perfil</a>
     </div>
-
 </div>
 
 <!-- MUSICA -->
@@ -271,6 +270,11 @@ function cerrarMenu(){
 
 function abrirJuego(juego){
     window.open(juego,"_blank");
+}
+
+/* 🤖 ABRIR IA */
+function abrirLink(){
+    window.open("https://character.ai/chat/YJgEq97YO3epOVbEro1kg-Xr4PW5hVA8HKVfX9Fvius","_blank");
 }
 </script>
 
